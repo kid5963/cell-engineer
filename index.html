@@ -26,9 +26,21 @@ footer{padding:0 16px 28px;color:var(--m);font-size:12px}footer .credit{font-siz
 .presetbtn{background:#334155;color:#f8fafc;border:1px solid #475569;white-space:nowrap}
 @media(max-width:560px){.presetline{grid-template-columns:1fr}.presetbtn{width:100%}}
 
+
+.comparebox{margin-top:14px;background:#0f1722;border:1px solid #334155;border-radius:14px;padding:13px}
+.comparehead{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:9px}
+.comparehead b{font-size:15px}.comparehint{font-size:11px;color:#94a3b8}
+.comparegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(max-width:650px){.comparegrid{grid-template-columns:repeat(2,1fr)}}
+.compareitem{background:#0b1118;border:1px solid #293444;border-radius:11px;padding:9px}
+.compareitem span{display:block;font-size:11px;color:#94a3b8}
+.compareitem strong{display:block;font-size:17px;margin-top:2px}
+.delta{font-size:12px!important;margin-top:3px}.delta.plus{color:#7dd3fc}.delta.minus{color:#fbbf24}.delta.same{color:#94a3b8}
+.changed{margin-top:10px;padding-top:9px;border-top:1px solid #293444;font-size:12px;color:#cbd5e1;line-height:1.55}
+
 </style></head>
 <body>
-<header><h1>CELL ENGINEER <span style="font-size:.38em;color:#93c5fd">v2.2</span></h1><div class="sub">Battery Racing Lab — 現実寄りに再調整した通常版</div></header>
+<header><h1>CELL ENGINEER <span style="font-size:.38em;color:#93c5fd">v2.3</span></h1><div class="sub">Battery Racing Lab — 現実寄りに再調整した通常版</div></header>
 <main>
 <section class="card">
 <h2>1. 電池を設計</h2>
@@ -81,6 +93,14 @@ footer{padding:0 16px 28px;color:var(--m);font-size:12px}footer .credit{font-siz
 <div class="stat"><span class="tiny">内部抵抗</span><b id="resistance">--</b></div>
 <div class="stat"><span class="tiny">寿命目安</span><b id="life">--</b></div>
 </div>
+
+<div id="compareBox" class="comparebox">
+ <div class="comparehead"><b>基準電池との差</b><span class="comparehint">基準プリセットを読み込むと有効になります</span></div>
+ <div id="compareTitle" class="tiny">基準未設定</div>
+ <div id="compareGrid" class="comparegrid" style="margin-top:8px"></div>
+ <div id="changedSettings" class="changed" style="display:none"></div>
+</div>
+
 <h2 style="margin-top:18px">4. EVで競技</h2>
 <div class="tiny">車体900 kg。電池重量・電圧降下・熱特性を反映します。</div>
 <div class="racegrid"><button class="racebtn" data-race="range">航続距離</button><button class="racebtn" data-race="sprint">0–100 km/h</button><button class="racebtn" data-race="hill">5 km ヒルクライム</button></div>
@@ -88,7 +108,7 @@ footer{padding:0 16px 28px;color:var(--m);font-size:12px}footer .credit{font-siz
 </section>
 <section class="card" style="grid-column:1/-1"><h2>設計ログ</h2><div id="log" class="log">—</div></section>
 </main>
-<footer><div class="credit">© 2026 kid5963 — CELL ENGINEER <span style="color:#a8b0bf">Model v2.2</span></div><div>Concept / game design: kid5963</div><div style="margin-top:6px">教育ゲーム用の近似モデルです。代表的な実用電池のパック性能を基準に味付けしています。</div></footer>
+<footer><div class="credit">© 2026 kid5963 — CELL ENGINEER <span style="color:#a8b0bf">Model v2.3</span></div><div>Concept / game design: kid5963</div><div style="margin-top:6px">教育ゲーム用の近似モデルです。代表的な実用電池のパック性能を基準に味付けしています。</div></footer>
 <script>
 
 document.addEventListener("DOMContentLoaded",()=>{const n=document.getElementById("previewNotice");if(n)n.style.display="none";});
@@ -423,6 +443,65 @@ function race(type){
  }
 }
 
+
+let baselineBattery=null;
+let baselineSettings=null;
+let baselineName="";
+
+function deltaInfo(now,base){
+ if(!Number.isFinite(now)||!Number.isFinite(base)||Math.abs(base)<1e-12)return {text:"—",cls:"same"};
+ const d=(now/base-1)*100;
+ if(Math.abs(d)<0.05)return {text:"±0.0%",cls:"same"};
+ return {text:(d>0?"+":"")+d.toFixed(1)+"%",cls:d>0?"plus":"minus"};
+}
+function comparisonItem(label,valueText,now,base){
+ const d=deltaInfo(now,base);
+ return `<div class="compareitem"><span>${label}</span><strong>${valueText}</strong><span class="delta ${d.cls}">${d.text}</span></div>`;
+}
+
+function estimateRangeStd(b){
+ const car=900+b.mass;
+ const road=125*(1+.00042*(car-900));
+ const I=18*1000/Math.max(b.packV,.1);
+ const loss=I*I*b.R/1000;
+ const packEff=clamp(18/(18+loss),.72,.995);
+ const whkm=road/(.90*packEff)+12;
+ const usable=b.energyKWh*b.usable*clamp(1-b.self*.04,.92,1);
+ return usable*1000/whkm;
+}
+function captureSettingsStd(){
+ const ids=["anode","cathode","electrolyte","architecture","volume","fill","gap","porous","carbon","cooling","separator","catalyst"];
+ const labels={anode:"負極",cathode:"正極",electrolyte:"電解液",architecture:"セル方式",volume:"電池ボックス",fill:"充填率",gap:"電極間距離",porous:"多孔質電極",carbon:"導電性カーボン",cooling:"液冷",separator:"高性能セパレータ",catalyst:"空気極触媒"};
+ const o={};
+ ids.forEach(id=>{const n=el(id);o[id]={label:labels[id],value:n.type==="checkbox"?(n.checked?"ON":"OFF"):n.value};});
+ return o;
+}
+function snapshotStd(b){
+ return {energy:b.energyKWh,power:b.maxPower,mass:b.mass,whkg:b.whkg,whl:b.whl,range:estimateRangeStd(b)};
+}
+function renderComparison(){
+ const grid=el("compareGrid"),title=el("compareTitle"),changed=el("changedSettings");
+ if(!baselineBattery){
+  title.textContent="基準未設定 — 上の「一般的な電池」を読み込んでください。";
+  grid.innerHTML="";
+  changed.style.display="none";
+  return;
+ }
+ const cur=snapshotStd(battery),base=baselineBattery;
+ title.textContent=`基準：${baselineName}`;
+ grid.innerHTML=
+  comparisonItem("総エネルギー",cur.energy.toFixed(1)+" kWh",cur.energy,base.energy)+
+  comparisonItem("最大出力",cur.power.toFixed(0)+" kW",cur.power,base.power)+
+  comparisonItem("重量",cur.mass.toFixed(0)+" kg",cur.mass,base.mass)+
+  comparisonItem("エネルギー密度",cur.whkg.toFixed(0)+" Wh/kg",cur.whkg,base.whkg)+
+  comparisonItem("体積エネルギー密度",cur.whl.toFixed(0)+" Wh/L",cur.whl,base.whl)+
+  comparisonItem("推定航続距離",cur.range.toFixed(0)+" km",cur.range,base.range);
+ const now=captureSettingsStd(),diff=[];
+ Object.keys(now).forEach(k=>{if(baselineSettings[k]&&now[k].value!==baselineSettings[k].value)diff.push(`${now[k].label}: ${baselineSettings[k].value} → ${now[k].value}`)});
+ changed.style.display="block";
+ changed.innerHTML=diff.length?`変更した設定：${diff.join(" / ")}`:"変更した設定：なし（基準値そのまま）";
+}
+
 const batteryPresets={
  lead:{title:"鉛蓄電池（Lead-acid）",market:"代表目安：2.0–2.1 V/cell、30–50 Wh/kg。高い瞬間電流が得意。サイクル寿命は使用深度で大きく変わる。",a:"鉛 Pb",c:"PbO₂",e:"希硫酸 H₂SO₄",x:"湿式プレート"},
  lfp:{title:"LiFePO₄ / LFP",market:"代表目安：3.2–3.3 V/cell。一般にNMCよりエネルギー密度は低いが、長寿命・高安全性が特徴。",a:"黒鉛 Graphite",c:"LFP系",e:"有機EC/DMC + LiPF₆",x:"積層パウチ"},
@@ -436,7 +515,7 @@ const batteryPresets={
 function updatePresetInfo(){const k=el("presetSelect").value;el("presetInfo").textContent=k?batteryPresets[k].market:"自由設計：材料・構造を自分で選んでください。";}
 
 function applyPreset(){
- const k=el("presetSelect").value;if(!k){updatePresetInfo();return}
+ const k=el("presetSelect").value;if(!k){baselineBattery=null;baselineSettings=null;baselineName="";updatePresetInfo();renderComparison();return}
  const p=batteryPresets[k];el("anode").value=p.a;el("cathode").value=p.c;el("electrolyte").value=p.e;el("architecture").value=p.x;el("volume").value=100;
  const s={
  lead:{fill:70,gap:4,porous:false,carbon:false,cooling:false,separator:true,catalyst:false},
