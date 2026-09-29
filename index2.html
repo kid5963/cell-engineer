@@ -7,12 +7,12 @@
 <meta name="copyright" content="© 2026 kid5963">
 <meta name="creator" content="kid5963">
 <meta name="theme-color" content="#0d1117">
-<meta property="og:title" content="CELL ENGINEER PRO — Battery Racing Lab">
+<meta property="og:title" content="CELL ENGINEER — Detailed Battery Lab">
 <meta property="og:description" content="電池を詳細設計し、EVに搭載して航続距離・加速・ヒルクライム・耐久を競う上級版思考実験ゲーム。">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
-<title>CELL ENGINEER PRO — Battery Racing Lab</title>
-<!-- CELL ENGINEER PRO v2.0 REALISTIC Realistic Model concept/design: kid5963 | © 2026 kid5963 -->
+<title>CELL ENGINEER — Detailed Battery Lab</title>
+<!-- CELL ENGINEER Detailed Model concept/design: kid5963 | © 2026 kid5963 -->
 <style>
 :root{
  --bg:#0b0f14;--panel:#151b23;--panel2:#1d2632;--text:#f2f6fb;--muted:#a9b5c4;
@@ -25,7 +25,6 @@ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Goth
 header,main,footer{max-width:1250px;margin:auto}
 header{padding:22px 16px 10px}
 h1{font-size:clamp(30px,6vw,52px);margin:0;letter-spacing:.045em}
-.pro{display:inline-block;margin-left:8px;padding:4px 9px;border-radius:999px;background:#2d1d4a;color:#e9d5ff;font-size:.38em;vertical-align:middle}
 .sub{color:var(--muted);font-size:14px;margin-top:4px}
 main{padding:8px 16px 36px;display:grid;grid-template-columns:1.05fr .95fr;gap:14px}
 @media(max-width:940px){main{grid-template-columns:1fr}}
@@ -65,17 +64,44 @@ button{border:0;border-radius:12px;padding:13px 14px;font-weight:800;font-size:1
 .note{background:#111923;border:1px solid #334155;border-radius:12px;padding:10px;color:#cbd5e1;font-size:12px}
 footer{padding:0 16px 30px;color:var(--muted);font-size:12px}
 footer .credit{font-size:14px;color:#e2e8f0;margin-bottom:4px}
+
+.presetbox{background:#101824;border:1px solid #334155;border-radius:14px;padding:12px;margin-bottom:14px}
+.presetline{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
+.presetinfo{margin-top:9px;color:#cbd5e1;font-size:12px;line-height:1.55}
+.presetbtn{background:#334155;color:#f8fafc;border:1px solid #475569;white-space:nowrap}
+@media(max-width:560px){.presetline{grid-template-columns:1fr}.presetbtn{width:100%}}
+
 </style>
 </head>
 <body>
 <header>
-<h1>CELL ENGINEER <span class="pro">PRO v2.0 REALISTIC</span></h1>
-<div class="sub">Battery Racing Lab — 上級電池設計・EV競技シミュレーター</div>
+<h1>CELL ENGINEER</h1>
+<div class="sub">Battery Racing Lab — 詳細設計モード</div>
 </header>
 
 <main>
 <section class="card">
 <h2>1. 化学系・基本構造</h2>
+
+<div class="presetbox">
+  <label>一般的な電池を基準として読み込む</label>
+  <div class="presetline">
+    <select id="presetSelect">
+      <option value="">自由設計</option>
+      <option value="lead">鉛蓄電池（Lead-acid）</option>
+      <option value="lfp">LiFePO₄ / LFP</option>
+      <option value="nmc">Li-ion / NMC</option>
+      <option value="lto">Li-ion / LTO</option>
+      <option value="alkaline">アルカリ乾電池 Zn–MnO₂</option>
+      <option value="zincair">亜鉛空気電池 Zn-air</option>
+      <option value="alair">アルミ空気電池 Al-air</option>
+      <option value="lis">Li–S（研究・試作系）</option>
+    </select>
+    <button type="button" id="loadPresetBtn" class="presetbtn">基準値を読み込む</button>
+  </div>
+  <div id="presetInfo" class="presetinfo">基準電池を選ぶと、一般的な性能帯とゲーム内の代表設定を表示します。</div>
+</div>
+
 <div class="grid2">
 <div class="row"><label>負極（燃料側）</label><select id="anode"></select></div>
 <div class="row"><label>正極</label><select id="cathode"></select></div>
@@ -101,7 +127,7 @@ footer .credit{font-size:14px;color:#e2e8f0;margin-bottom:4px}
 
 <div class="grid2">
 <div class="row"><label>集電体</label><select id="collector">
-<option value="Cu">銅 Cu</option><option value="Al" selected>アルミ Al</option><option value="Ni">ニッケル Ni</option><option value="SS">ステンレス</option><option value="C">カーボン複合</option></select></div>
+<option value="Cu">銅 Cu</option><option value="Al" selected>アルミ Al</option><option value="CuAl">Cu＋Al（Li-ion標準）</option><option value="Pb">鉛合金グリッド</option><option value="Ni">ニッケル Ni</option><option value="SS">ステンレス</option><option value="C">カーボン複合</option></select></div>
 <div class="row"><label>冷却方式</label><select id="coolingMode">
 <option value="none">自然冷却</option><option value="air">強制空冷</option><option value="liquid" selected>液冷</option><option value="direct">冷媒直冷</option></select></div>
 </div>
@@ -112,7 +138,7 @@ footer .credit{font-size:14px;color:#e2e8f0;margin-bottom:4px}
 <div class="upgrade"><span>触媒強化 <span class="tag">空気極↑</span><span class="tag">価格↑</span></span><input type="checkbox" id="catalyst"></div>
 <div class="upgrade"><span>BMS高精度化 <span class="tag">寿命↑</span><span class="tag">価格↑</span></span><input type="checkbox" id="bms" checked></div>
 
-<button id="buildBtn" class="primary">PRO電池を組み立てる</button>
+<button id="buildBtn" class="primary">この電池を組み立てる</button>
 </section>
 
 <section class="card">
@@ -147,7 +173,7 @@ footer .credit{font-size:14px;color:#e2e8f0;margin-bottom:4px}
 <button class="racebtn" data-race="hill">ヒルクライム</button>
 <button class="racebtn" data-race="endurance">耐久100 km</button>
 </div>
-<div id="result" class="result"><b>まだPRO電池がありません。</b><div class="tiny">左で設計し「PRO電池を組み立てる」を押してください。</div></div>
+<div id="result" class="result"><b>まだ電池がありません。</b><div class="tiny">左で設計し「この電池を組み立てる」を押してください。</div></div>
 
 <h3>レース中の見どころ</h3>
 <div class="note">高出力では <b>V = OCV − I×R</b> の電圧降下と <b>I²R</b> 発熱が効きます。厚い電極は容量に有利ですが高出力に不利、孔率を上げると反応面積は増えますが活物質密度が下がります。</div>
@@ -160,7 +186,7 @@ footer .credit{font-size:14px;color:#e2e8f0;margin-bottom:4px}
 </main>
 
 <footer>
-<div class="credit">© 2026 kid5963 — CELL ENGINEER PRO v2.0 REALISTIC</div>
+<div class="credit">© 2026 kid5963 — CELL ENGINEER / Detailed Model v2.2</div>
 <div>Concept / game design: kid5963</div>
 <div style="margin-top:7px">教育・ゲーム用の近似モデルです。実際の電池設計、安全評価、材料選定には使用できません。数値は現実の傾向を参考にゲームバランス用に簡略化されています。</div>
 </footer>
@@ -353,6 +379,8 @@ function terminalVoltageAtPower(V,R,Pkw){
 const collectors={
 Cu:{mass:.045,power:1.08,cost:1.6,safe:.95,mfg:.98},
 Al:{mass:.018,power:1.00,cost:.6,safe:.92,mfg:.98},
+CuAl:{mass:.030,power:1.05,cost:1.0,safe:.94,mfg:.98},
+Pb:{mass:.065,power:.76,cost:.55,safe:.98,mfg:.98},
 Ni:{mass:.050,power:.90,cost:2.2,safe:.96,mfg:.88},
 SS:{mass:.050,power:.70,cost:.7,safe:.98,mfg:.98},
 C:{mass:.015,power:.78,cost:1.9,safe:.99,mfg:.62}
@@ -487,7 +515,7 @@ function render(){
 ${notes.join("\n")}
 
 ※代表的な実用電池の性能帯を上限として使う教育ゲーム用近似モデルです。`;
- el("result").innerHTML="<b>PRO電池完成。</b><div class='tiny'>4種類の競技で性能を確認してください。</div>";
+ el("result").innerHTML="<b>電池完成。</b><div class='tiny'>4種類の競技で性能を確認してください。</div>";
 }
 
 function cruisePackEff(b,pkw=20){const I=pkw*1000/Math.max(b.packV,.1),loss=I*I*b.R/1000;return clamp(pkw/(pkw+loss),.70,.995)}
@@ -526,6 +554,36 @@ function race(type){
    el("result").innerHTML=`<b>100 km耐久</b><div class="score">${finish?"完走":"電欠 "+completed.toFixed(0)+" km"} / ${minutes.toFixed(1)} min</div><div class="tiny">必要 ${need.toFixed(1)} kWh / ${deg===null?"一次・交換式のためSOH評価なし":"推定SOH低下 "+(deg*100).toFixed(4)+"%"}</div>`;
  }
 }
+
+const batteryPresets={
+ lead:{title:"鉛蓄電池（Lead-acid）",market:"代表目安：2.0–2.1 V/cell、30–50 Wh/kg。高い瞬間電流が得意。サイクル寿命は使用深度で大きく変わる。",a:"鉛 Pb",c:"PbO₂",e:"希硫酸 H₂SO₄",x:"湿式プレート"},
+ lfp:{title:"LiFePO₄ / LFP",market:"代表目安：3.2–3.3 V/cell。一般にNMCよりエネルギー密度は低いが、長寿命・高安全性が特徴。",a:"黒鉛 Graphite",c:"LFP系",e:"有機EC/DMC + LiPF₆",x:"積層パウチ"},
+ nmc:{title:"Li-ion / NMC",market:"代表目安：3.6–3.7 V/cell。高エネルギー密度型で、EVや携帯機器で広く使われる。",a:"黒鉛 Graphite",c:"NMC系",e:"有機EC/DMC + LiPF₆",x:"積層パウチ"},
+ lto:{title:"Li-ion / LTO",market:"代表目安：2.3–2.4 V/cell、50–80 Wh/kg程度。急速充放電・低温・長寿命に強い。",a:"LTO (Li4Ti5O12)",c:"NMC系",e:"有機EC/DMC + LiPF₆",x:"積層パウチ"},
+ alkaline:{title:"アルカリ乾電池 Zn–MnO₂",market:"代表目安：1.5 V/cell。一次電池。長期保存性と低コストが強み。",a:"亜鉛 Zn",c:"MnO₂",e:"KOH水溶液",x:"湿式プレート"},
+ zincair:{title:"亜鉛空気電池 Zn-air",market:"代表目安：1.2–1.4 V/cell。高エネルギー密度を狙えるが、空気極が出力・寿命を制約しやすい。",a:"亜鉛 Zn",c:"空気極 O₂",e:"KOH水溶液",x:"金属空気セル"},
+ alair:{title:"アルミ空気電池 Al-air",market:"特殊・研究用途を含む金属空気系。約1.1–1.4 V/cell。高い理論容量を持つが、自己腐食・空気極・再充電性が課題。",a:"アルミ Al",c:"空気極 O₂",e:"天然海水",x:"金属空気セル"},
+ lis:{title:"Li–S（研究・試作系）",market:"代表電圧は約2.1 V/cell。高比エネルギーが期待される一方、サイクル寿命やシャトル反応が課題。",a:"リチウム Li",c:"硫黄 S",e:"LiTFSI エーテル系",x:"積層パウチ"}
+};
+function updatePresetInfo(){const k=el("presetSelect").value;el("presetInfo").textContent=k?batteryPresets[k].market:"自由設計：材料・構造を自分で選んでください。";}
+
+function applyPreset(){
+ const k=el("presetSelect").value;if(!k){updatePresetInfo();return}
+ const p=batteryPresets[k];el("anode").value=p.a;el("cathode").value=p.c;el("electrolyte").value=p.e;el("architecture").value=p.x;
+ const s={
+ lead:{S:195,P:2,inv:400,fill:70,gap:4,th:700,por:45,sep:90,ely:105,col:"Pb",cool:"none",carbon:false,separator:true,catalyst:false,bms:false},
+ lfp:{S:125,P:8,inv:400,fill:78,gap:2,th:110,por:30,sep:20,ely:70,col:"CuAl",cool:"liquid",carbon:true,separator:true,catalyst:false,bms:true},
+ nmc:{S:110,P:8,inv:400,fill:80,gap:2,th:90,por:28,sep:18,ely:65,col:"CuAl",cool:"liquid",carbon:true,separator:true,catalyst:false,bms:true},
+ lto:{S:174,P:6,inv:400,fill:74,gap:2,th:80,por:35,sep:20,ely:75,col:"CuAl",cool:"liquid",carbon:true,separator:true,catalyst:false,bms:true},
+ alkaline:{S:267,P:4,inv:400,fill:68,gap:3,th:450,por:40,sep:60,ely:95,col:"Ni",cool:"none",carbon:true,separator:true,catalyst:false,bms:false},
+ zincair:{S:320,P:4,inv:400,fill:64,gap:4,th:550,por:48,sep:65,ely:90,col:"Ni",cool:"air",carbon:true,separator:true,catalyst:true,bms:false},
+ alair:{S:320,P:3,inv:400,fill:62,gap:5,th:650,por:45,sep:70,ely:90,col:"Ni",cool:"air",carbon:true,separator:true,catalyst:true,bms:false},
+ lis:{S:190,P:6,inv:400,fill:72,gap:2,th:120,por:42,sep:20,ely:85,col:"CuAl",cool:"liquid",carbon:true,separator:true,catalyst:false,bms:true}
+ }[k];
+ el("series").value=s.S;el("parallel").value=s.P;el("inverter").value=String(s.inv);el("volume").value=100;el("fill").value=s.fill;el("gap").value=s.gap;el("thickness").value=s.th;el("porosity").value=s.por;el("sepThickness").value=s.sep;el("elyteRatio").value=s.ely;el("collector").value=s.col;el("coolingMode").value=s.cool;["carbon","separator","catalyst","bms"].forEach(id=>el(id).checked=s[id]);labels();updatePresetInfo();buildBattery();
+}
+el("presetSelect").addEventListener("change",updatePresetInfo);el("loadPresetBtn").addEventListener("click",applyPreset);updatePresetInfo();
+
 el("buildBtn").addEventListener("click",buildBattery);
 document.querySelectorAll("[data-race]").forEach(btn=>btn.addEventListener("click",()=>race(btn.dataset.race)));
 buildBattery();
