@@ -12,7 +12,7 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
 <title>CELL ENGINEER PRO — Battery Racing Lab</title>
-<!-- CELL ENGINEER PRO concept/design: kid5963 | © 2026 kid5963 -->
+<!-- CELL ENGINEER PRO v2.0 REALISTIC Realistic Model concept/design: kid5963 | © 2026 kid5963 -->
 <style>
 :root{
  --bg:#0b0f14;--panel:#151b23;--panel2:#1d2632;--text:#f2f6fb;--muted:#a9b5c4;
@@ -69,7 +69,7 @@ footer .credit{font-size:14px;color:#e2e8f0;margin-bottom:4px}
 </head>
 <body>
 <header>
-<h1>CELL ENGINEER <span class="pro">PRO v1.1</span></h1>
+<h1>CELL ENGINEER <span class="pro">PRO v2.0 REALISTIC</span></h1>
 <div class="sub">Battery Racing Lab — 上級電池設計・EV競技シミュレーター</div>
 </header>
 
@@ -160,358 +160,376 @@ footer .credit{font-size:14px;color:#e2e8f0;margin-bottom:4px}
 </main>
 
 <footer>
-<div class="credit">© 2026 kid5963 — CELL ENGINEER PRO</div>
+<div class="credit">© 2026 kid5963 — CELL ENGINEER PRO v2.0 REALISTIC</div>
 <div>Concept / game design: kid5963</div>
 <div style="margin-top:7px">教育・ゲーム用の近似モデルです。実際の電池設計、安全評価、材料選定には使用できません。数値は現実の傾向を参考にゲームバランス用に簡略化されています。</div>
 </footer>
 
 <script>
-"use strict";
 
 const anodes={
-"亜鉛 Zn":{pot:-.76,cap:.82,rho:7.14,power:.55,stable:.82,self:.12,cost:1.1,mfg:.92,t:["水系","アルカリ","酸性"]},
-"アルミ Al":{pot:-1.66,cap:2.98,rho:2.70,power:.70,stable:.55,self:.28,cost:.8,mfg:.95,t:["海水","水系","アルカリ"]},
-"マグネシウム Mg":{pot:-2.37,cap:2.20,rho:1.74,power:.88,stable:.42,self:.38,cost:1.8,mfg:.82,t:["海水","水系"]},
-"鉄 Fe":{pot:-.44,cap:.96,rho:7.87,power:.40,stable:.90,self:.08,cost:.35,mfg:1,t:["水系","アルカリ"]},
-"リチウム Li":{pot:-3.04,cap:3.86,rho:.53,power:.95,stable:.25,self:.45,cost:7.5,mfg:.58,t:["有機","固体"]},
-"ナトリウム Na":{pot:-2.71,cap:1.17,rho:.97,power:.88,stable:.30,self:.42,cost:1.5,mfg:.72,t:["有機","固体","溶融塩"]},
-"カリウム K":{pot:-2.93,cap:.69,rho:.86,power:.92,stable:.22,self:.50,cost:2.2,mfg:.55,t:["有機","固体"]},
-"カルシウム Ca":{pot:-2.87,cap:1.34,rho:1.55,power:.72,stable:.36,self:.32,cost:1.6,mfg:.65,t:["有機","固体","溶融塩"]},
-"チタン Ti":{pot:-1.63,cap:.67,rho:4.51,power:.46,stable:.95,self:.03,cost:5.5,mfg:.75,t:["水系","有機","固体"]},
-"クロム Cr":{pot:-.74,cap:1.04,rho:7.19,power:.50,stable:.88,self:.05,cost:2.7,mfg:.78,t:["水系","酸性"]},
-"マンガン Mn":{pot:-1.18,cap:.98,rho:7.21,power:.58,stable:.64,self:.16,cost:1.0,mfg:.88,t:["水系","アルカリ"]},
-"スズ Sn":{pot:-.14,cap:.45,rho:7.31,power:.42,stable:.92,self:.04,cost:4.3,mfg:.83,t:["水系","有機"]},
-"鉛 Pb":{pot:-.13,cap:.26,rho:11.34,power:.62,stable:.92,self:.05,cost:.75,mfg:.96,t:["酸性"]},
-"ニッケル Ni":{pot:-.25,cap:.91,rho:8.90,power:.60,stable:.95,self:.03,cost:6.5,mfg:.84,t:["アルカリ","水系"]},
-"カドミウム Cd":{pot:-.40,cap:.48,rho:8.65,power:.72,stable:.90,self:.06,cost:3.8,mfg:.60,t:["アルカリ"]},
-"銅 Cu":{pot:.34,cap:.84,rho:8.96,power:.34,stable:.98,self:.01,cost:6.0,mfg:.98,t:["水系","酸性"]},
-"銀 Ag":{pot:.80,cap:.25,rho:10.49,power:.55,stable:.99,self:.01,cost:90,mfg:.72,t:["水系","アルカリ"]},
-"シリコン Si":{pot:-.40,cap:3.58,rho:2.33,power:.55,stable:.45,self:.10,cost:2.8,mfg:.52,t:["有機","固体"]},
-"黒鉛 Graphite":{pot:-.10,cap:.37,rho:2.26,power:.78,stable:.93,self:.04,cost:1.8,mfg:.95,t:["有機","固体"]},
-"LTO":{pot:1.55,cap:.18,rho:3.50,power:1.00,stable:.99,self:.02,cost:7.0,mfg:.74,t:["有機","固体"]},
-"Al-Zn-In 海水用合金":{pot:-1.05,cap:2.40,rho:2.75,power:.82,stable:.78,self:.18,cost:2.1,mfg:.82,t:["海水"]},
-"Mg-Al-Zn 合金":{pot:-1.55,cap:1.75,rho:1.82,power:.92,stable:.62,self:.24,cost:2.5,mfg:.78,t:["海水","水系"]},
-"Zn-Al 合金":{pot:-.92,cap:1.05,rho:6.20,power:.66,stable:.84,self:.11,cost:1.5,mfg:.88,t:["水系","アルカリ"]},
-"Fe-Si 合金":{pot:-.52,cap:.72,rho:6.90,power:.48,stable:.94,self:.04,cost:.7,mfg:.95,t:["水系","アルカリ"]}
+"亜鉛 Zn":{redox:-.76,cap:.82,rho:7.14,power:.55,stable:.82,self:.12,cost:1.1,mfg:.92,t:["水系","アルカリ","酸性"]},
+"アルミ Al":{redox:-1.66,cap:2.98,rho:2.70,power:.70,stable:.55,self:.28,cost:.8,mfg:.95,t:["海水","水系","アルカリ"]},
+"マグネシウム Mg":{redox:-2.37,cap:2.20,rho:1.74,power:.88,stable:.42,self:.38,cost:1.8,mfg:.82,t:["海水","水系"]},
+"鉄 Fe":{redox:-.44,cap:.96,rho:7.87,power:.40,stable:.90,self:.08,cost:.35,mfg:1,t:["水系","アルカリ"]},
+"リチウム Li":{redox:-3.04,cap:3.86,rho:.53,power:.95,stable:.25,self:.45,cost:7.5,mfg:.58,t:["有機","固体"]},
+"ナトリウム Na":{redox:-2.71,cap:1.17,rho:.97,power:.88,stable:.30,self:.42,cost:1.5,mfg:.72,t:["有機","固体","溶融塩"]},
+"カリウム K":{redox:-2.93,cap:.69,rho:.86,power:.92,stable:.22,self:.50,cost:2.2,mfg:.55,t:["有機","固体"]},
+"カルシウム Ca":{redox:-2.87,cap:1.34,rho:1.55,power:.72,stable:.36,self:.32,cost:1.6,mfg:.65,t:["有機","固体","溶融塩"]},
+"チタン Ti":{redox:-1.63,cap:.67,rho:4.51,power:.46,stable:.95,self:.03,cost:5.5,mfg:.75,t:["水系","有機","固体"]},
+"クロム Cr":{redox:-.74,cap:1.04,rho:7.19,power:.50,stable:.88,self:.05,cost:2.7,mfg:.78,t:["水系","酸性"]},
+"マンガン Mn":{redox:-1.18,cap:.98,rho:7.21,power:.58,stable:.64,self:.16,cost:1.0,mfg:.88,t:["水系","アルカリ"]},
+"スズ Sn":{redox:-.14,cap:.45,rho:7.31,power:.42,stable:.92,self:.04,cost:4.3,mfg:.83,t:["水系","有機"]},
+"鉛 Pb":{redox:-.13,cap:.26,rho:11.34,power:.62,stable:.92,self:.05,cost:.75,mfg:.96,t:["酸性"]},
+"ニッケル Ni":{redox:-.25,cap:.91,rho:8.90,power:.60,stable:.95,self:.03,cost:6.5,mfg:.84,t:["アルカリ","水系"]},
+"カドミウム Cd":{redox:-.40,cap:.48,rho:8.65,power:.72,stable:.90,self:.06,cost:3.8,mfg:.60,t:["アルカリ"]},
+"銅 Cu":{redox:.34,cap:.84,rho:8.96,power:.34,stable:.98,self:.01,cost:6.0,mfg:.98,t:["水系","酸性"]},
+"銀 Ag":{redox:.80,cap:.25,rho:10.49,power:.55,stable:.99,self:.01,cost:90,mfg:.72,t:["水系","アルカリ"]},
+"シリコン Si":{redox:-2.65,cap:3.58,rho:2.33,power:.55,stable:.45,self:.10,cost:2.8,mfg:.52,t:["有機","固体"]},
+"黒鉛 Graphite":{redox:-2.94,cap:.372,rho:2.26,power:.78,stable:.93,self:.04,cost:1.8,mfg:.95,t:["有機","固体"]},
+"LTO (Li4Ti5O12)":{redox:-1.49,cap:.175,rho:3.50,power:1.00,stable:.99,self:.02,cost:7.0,mfg:.74,t:["有機","固体"]},
+"Al-Zn-In 海水用合金":{redox:-1.05,cap:2.40,rho:2.75,power:.82,stable:.78,self:.18,cost:2.1,mfg:.82,t:["海水"]},
+"Mg-Al-Zn 合金":{redox:-1.55,cap:1.75,rho:1.82,power:.92,stable:.62,self:.24,cost:2.5,mfg:.78,t:["海水","水系"]},
+"Zn-Al 合金":{redox:-.92,cap:1.05,rho:6.20,power:.66,stable:.84,self:.11,cost:1.5,mfg:.88,t:["水系","アルカリ"]},
+"Fe-Si 合金":{redox:-.52,cap:.72,rho:6.90,power:.48,stable:.94,self:.04,cost:.7,mfg:.95,t:["水系","アルカリ"]}
 };
 
 const cathodes={
-"MnO₂":{pot:.74,m:1.0,p:.55,cost:1.0,mfg:.95,c:["水系","アルカリ","酸性"]},
-"NiOOH":{pot:.49,m:1.15,p:.72,cost:4.5,mfg:.80,c:["アルカリ"]},
-"空気極 O₂":{pot:.40,m:.20,p:.42,cost:1.2,mfg:.68,c:["海水","水系","アルカリ"],air:1},
-"LFP系":{pot:.60,m:.75,p:.80,cost:2.4,mfg:.92,c:["有機","固体"]},
-"NMC系":{pot:.85,m:.65,p:.92,cost:5.5,mfg:.82,c:["有機","固体"]},
-"LCO系":{pot:.95,m:.68,p:.84,cost:6.4,mfg:.78,c:["有機","固体"]},
-"LMO系":{pot:.82,m:.72,p:.88,cost:3.0,mfg:.88,c:["有機","固体"]},
-"硫黄 S":{pot:.55,m:.35,p:.48,cost:.55,mfg:.62,c:["有機","固体"]},
-"FePO₄系":{pot:.52,m:.82,p:.74,cost:1.7,mfg:.92,c:["有機","固体"]},
-"Ag₂O":{pot:.34,m:1.30,p:.76,cost:60,mfg:.70,c:["アルカリ"]},
-"HgO":{pot:.10,m:1.45,p:.66,cost:8,mfg:.30,c:["アルカリ"]},
-"PbO₂":{pot:1.46,m:1.28,p:.78,cost:1.3,mfg:.94,c:["酸性"]},
-"CuO":{pot:.22,m:1.10,p:.52,cost:2.3,mfg:.88,c:["水系","アルカリ"]},
-"FeS₂":{pot:.48,m:.92,p:.70,cost:1.0,mfg:.88,c:["有機"]},
-"Prussian Blue":{pot:.65,m:.78,p:.70,cost:1.5,mfg:.78,c:["水系","有機"]},
-"V₂O₅":{pot:.88,m:.86,p:.68,cost:6.0,mfg:.65,c:["水系","有機"]},
-"活性炭キャパシタ極":{pot:.30,m:.22,p:1.20,cost:1.2,mfg:.95,c:["水系","有機","イオン液体"]},
-"グラファイト正極":{pot:.45,m:.50,p:.76,cost:1.8,mfg:.90,c:["有機","固体"]},
-"Br₂/Br⁻":{pot:1.07,m:.55,p:.88,cost:2.4,mfg:.55,c:["水系","酸性"]},
-"I₂/I⁻":{pot:.54,m:.62,p:.64,cost:4.0,mfg:.70,c:["水系","有機"]}
+"MnO₂":{redox:.74,cap:.308,rho:5.0,power:.55,cost:1.0,mfg:.95,c:["水系","アルカリ","酸性"]},
+"NiOOH":{redox:.49,cap:.292,rho:4.1,power:.72,cost:4.5,mfg:.80,c:["アルカリ"]},
+"空気極 O₂":{redox:.40,cap:null,rho:.45,power:.42,cost:1.2,mfg:.68,c:["海水","水系","アルカリ"],air:true},
+"LFP系":{redox:.41,cap:.170,rho:3.6,power:.80,cost:2.4,mfg:.92,c:["有機","固体"]},
+"NMC系":{redox:.68,cap:.190,rho:4.8,power:.92,cost:5.5,mfg:.82,c:["有機","固体"]},
+"LCO系":{redox:.66,cap:.170,rho:5.1,power:.84,cost:6.4,mfg:.78,c:["有機","固体"]},
+"LMO系":{redox:.90,cap:.120,rho:4.3,power:.88,cost:3.0,mfg:.88,c:["有機","固体"]},
+"硫黄 S":{redox:-.94,cap:1.675,rho:2.0,power:.48,cost:.55,mfg:.62,c:["有機","固体"]},
+"FePO₄系":{redox:.38,cap:.178,rho:3.6,power:.74,cost:1.7,mfg:.92,c:["有機","固体"]},
+"Ag₂O":{redox:.34,cap:.231,rho:7.1,power:.76,cost:60,mfg:.70,c:["アルカリ"]},
+"HgO":{redox:.10,cap:.247,rho:11.1,power:.66,cost:8,mfg:.30,c:["アルカリ"]},
+"PbO₂":{redox:1.46,cap:.224,rho:9.4,power:.78,cost:1.3,mfg:.94,c:["酸性"]},
+"CuO":{redox:.22,cap:.674,rho:6.3,power:.52,cost:2.3,mfg:.88,c:["水系","アルカリ"]},
+"FeS₂":{redox:-1.54,cap:.894,rho:5.0,power:.70,cost:1.0,mfg:.88,c:["有機"]},
+"Prussian Blue":{redox:.30,cap:.150,rho:1.9,power:.70,cost:1.5,mfg:.78,c:["水系","有機"]},
+"V₂O₅":{redox:.88,cap:.294,rho:3.4,power:.68,cost:6.0,mfg:.65,c:["水系","有機"]},
+"活性炭キャパシタ極":{redox:.30,cap:.060,rho:.55,power:1.20,cost:1.2,mfg:.95,c:["水系","有機","イオン液体"]},
+"グラファイト正極":{redox:.45,cap:.100,rho:2.2,power:.76,cost:1.8,mfg:.90,c:["有機","固体"]},
+"Br₂/Br⁻":{redox:1.07,cap:.335,rho:3.1,power:.88,cost:2.4,mfg:.55,c:["水系","酸性"]},
+"I₂/I⁻":{redox:.54,cap:.211,rho:4.9,power:.64,cost:4.0,mfg:.70,c:["水系","有機"]}
 };
 
 const electrolytes={
-"天然海水":{type:"海水",cond:.58,safe:.92,m:1.03,v:1.7,temp:.72,cost:.02,mfg:1},
-"人工海水":{type:"海水",cond:.62,safe:.92,m:1.03,v:1.7,temp:.73,cost:.12,mfg:.98},
-"中性NaCl水溶液":{type:"水系",cond:.70,safe:.88,m:1.00,v:1.7,temp:.74,cost:.08,mfg:1},
-"Na₂SO₄水溶液":{type:"水系",cond:.64,safe:.92,m:1.05,v:1.8,temp:.78,cost:.15,mfg:.98},
-"ZnSO₄水溶液":{type:"水系",cond:.60,safe:.84,m:1.10,v:1.8,temp:.76,cost:.35,mfg:.96},
-"KOH水溶液":{type:"アルカリ",cond:.96,safe:.62,m:1.00,v:1.6,temp:.78,cost:.35,mfg:.95},
-"NaOH水溶液":{type:"アルカリ",cond:.91,safe:.58,m:1.03,v:1.6,temp:.77,cost:.25,mfg:.96},
-"LiOH水溶液":{type:"アルカリ",cond:.78,safe:.60,m:1.02,v:1.6,temp:.78,cost:1.2,mfg:.85},
-"希硫酸 H₂SO₄":{type:"酸性",cond:1.00,safe:.38,m:1.15,v:2.1,temp:.80,cost:.18,mfg:.98},
-"硫酸亜鉛系酸性液":{type:"酸性",cond:.82,safe:.52,m:1.12,v:2.0,temp:.78,cost:.45,mfg:.95},
-"有機EC/DMC + LiPF₆":{type:"有機",cond:.66,safe:.40,m:1.20,v:4.3,temp:.62,cost:2.0,mfg:.82},
-"有機PC + LiPF₆":{type:"有機",cond:.58,safe:.38,m:1.18,v:4.2,temp:.66,cost:2.2,mfg:.80},
-"NaPF₆ カーボネート系":{type:"有機",cond:.52,safe:.42,m:1.17,v:4.0,temp:.64,cost:2.1,mfg:.74},
-"KPF₆ カーボネート系":{type:"有機",cond:.46,safe:.40,m:1.16,v:4.0,temp:.62,cost:2.4,mfg:.68},
-"LiTFSI エーテル系":{type:"有機",cond:.62,safe:.46,m:1.13,v:4.1,temp:.68,cost:4.0,mfg:.62},
-"イオン液体 EMIM-TFSI":{type:"イオン液体",cond:.36,safe:.82,m:1.45,v:4.5,temp:.86,cost:8.0,mfg:.50},
-"深共晶溶媒 DES":{type:"イオン液体",cond:.28,safe:.86,m:1.20,v:3.2,temp:.80,cost:1.8,mfg:.65},
-"PEO系固体電解質":{type:"固体",cond:.18,safe:.95,m:1.10,v:4.3,temp:.58,cost:5.0,mfg:.45},
-"硫化物系固体電解質":{type:"固体",cond:.72,safe:.72,m:1.85,v:5.0,temp:.72,cost:8.5,mfg:.32},
-"酸化物系固体電解質":{type:"固体",cond:.38,safe:.98,m:2.20,v:5.5,temp:.82,cost:10,mfg:.28},
-"溶融塩 NaCl-KCl":{type:"溶融塩",cond:.90,safe:.30,m:1.55,v:3.5,temp:.98,cost:.5,mfg:.35},
-"ZnBr₂水溶液":{type:"水系",cond:.76,safe:.52,m:1.32,v:2.2,temp:.74,cost:.9,mfg:.78},
-"KI/I₂水溶液":{type:"水系",cond:.68,safe:.66,m:1.16,v:1.9,temp:.76,cost:1.5,mfg:.75}
+"天然海水":{type:"海水",cond:5.0,safe:.92,rho:1.03,v:1.7,temp:.72,cost:.02,mfg:1},
+"人工海水":{type:"海水",cond:5.5,safe:.92,rho:1.03,v:1.7,temp:.73,cost:.12,mfg:.98},
+"中性NaCl水溶液":{type:"水系",cond:8.0,safe:.88,rho:1.00,v:1.7,temp:.74,cost:.08,mfg:1},
+"Na₂SO₄水溶液":{type:"水系",cond:5.0,safe:.92,rho:1.05,v:1.8,temp:.78,cost:.15,mfg:.98},
+"ZnSO₄水溶液":{type:"水系",cond:4.0,safe:.84,rho:1.10,v:1.8,temp:.76,cost:.35,mfg:.96},
+"KOH水溶液":{type:"アルカリ",cond:50,safe:.62,rho:1.00,v:1.6,temp:.78,cost:.35,mfg:.95},
+"NaOH水溶液":{type:"アルカリ",cond:40,safe:.58,rho:1.03,v:1.6,temp:.77,cost:.25,mfg:.96},
+"LiOH水溶液":{type:"アルカリ",cond:20,safe:.60,rho:1.02,v:1.6,temp:.78,cost:1.2,mfg:.85},
+"希硫酸 H₂SO₄":{type:"酸性",cond:70,safe:.38,rho:1.15,v:2.1,temp:.80,cost:.18,mfg:.98},
+"硫酸亜鉛系酸性液":{type:"酸性",cond:12,safe:.52,rho:1.12,v:2.0,temp:.78,cost:.45,mfg:.95},
+"有機EC/DMC + LiPF₆":{type:"有機",cond:1.1,safe:.40,rho:1.20,v:4.3,temp:.62,cost:2.0,mfg:.82},
+"有機PC + LiPF₆":{type:"有機",cond:.9,safe:.38,rho:1.18,v:4.2,temp:.66,cost:2.2,mfg:.80},
+"NaPF₆ カーボネート系":{type:"有機",cond:.8,safe:.42,rho:1.17,v:4.0,temp:.64,cost:2.1,mfg:.74},
+"KPF₆ カーボネート系":{type:"有機",cond:.7,safe:.40,rho:1.16,v:4.0,temp:.62,cost:2.4,mfg:.68},
+"LiTFSI エーテル系":{type:"有機",cond:1.2,safe:.46,rho:1.13,v:4.1,temp:.68,cost:4.0,mfg:.62},
+"イオン液体 EMIM-TFSI":{type:"イオン液体",cond:.5,safe:.82,rho:1.45,v:4.5,temp:.86,cost:8.0,mfg:.50},
+"深共晶溶媒 DES":{type:"イオン液体",cond:.25,safe:.86,rho:1.20,v:3.2,temp:.80,cost:1.8,mfg:.65},
+"PEO系固体電解質":{type:"固体",cond:.002,safe:.95,rho:1.10,v:4.3,temp:.58,cost:5.0,mfg:.45},
+"硫化物系固体電解質":{type:"固体",cond:1.0,safe:.72,rho:1.85,v:5.0,temp:.72,cost:8.5,mfg:.32},
+"酸化物系固体電解質":{type:"固体",cond:.10,safe:.98,rho:2.20,v:5.5,temp:.82,cost:10,mfg:.28},
+"溶融塩 NaCl-KCl":{type:"溶融塩",cond:100,safe:.30,rho:1.55,v:3.5,temp:.98,cost:.5,mfg:.35},
+"ZnBr₂水溶液":{type:"水系",cond:10,safe:.52,rho:1.32,v:2.2,temp:.74,cost:.9,mfg:.78},
+"KI/I₂水溶液":{type:"水系",cond:8,safe:.66,rho:1.16,v:1.9,temp:.76,cost:1.5,mfg:.75}
 };
 
 const architectures={
-"湿式プレート":{e:.78,p:.72,m:1.00,t:.84,s:.85,mfg:.96,cost:1.0},
-"巻回セル":{e:1.08,p:.90,m:.92,t:.72,s:.72,mfg:.90,cost:1.15},
-"積層パウチ":{e:1.15,p:.96,m:.86,t:.68,s:.66,mfg:.82,cost:1.20},
-"フローセル":{e:.66,p:.82,m:1.18,t:.95,s:.88,mfg:.58,cost:1.35},
-"金属空気セル":{e:1.35,p:.62,m:.76,t:.80,s:.75,mfg:.52,cost:1.25,air:1}
+"湿式プレート":{active:.55,e:.90,p:.82,struct:.13,thermal:.84,safe:.85,mfg:.96,cost:1.0,optThick:500},
+"巻回セル":{active:.68,e:1.00,p:1.00,struct:.10,thermal:.72,safe:.72,mfg:.90,cost:1.15,optThick:100},
+"積層パウチ":{active:.72,e:1.06,p:1.05,struct:.08,thermal:.68,safe:.66,mfg:.82,cost:1.20,optThick:120},
+"フローセル":{active:.30,e:.75,p:1.05,struct:.24,thermal:.95,safe:.88,mfg:.58,cost:1.35,optThick:300},
+"金属空気セル":{active:.55,e:1.00,p:.90,struct:.12,thermal:.80,safe:.75,mfg:.52,cost:1.25,optThick:600,air:1}
 };
 
-const collectors={
-Cu:{rho:8.96,res:.95,cost:1.6,safe:.95,mfg:.98},
-Al:{rho:2.70,res:1.35,cost:.6,safe:.92,mfg:.98},
-Ni:{rho:8.90,res:1.25,cost:2.2,safe:.96,mfg:.88},
-SS:{rho:7.9,res:4.5,cost:.7,safe:.98,mfg:.98},
-C:{rho:1.8,res:2.4,cost:1.9,safe:.99,mfg:.62}
+const pairProfiles={
+"亜鉛 Zn|MnO₂":{v:1.50,whkg:110,whl:180,wkg:250,density:1.50,usable:.85,cycle:1,sag:.16,label:"一次電池"},
+"亜鉛 Zn|空気極 O₂":{v:1.25,whkg:350,whl:450,wkg:250,density:1.30,usable:.80,cycle:1,sag:.20,label:"一次/交換式"},
+"アルミ Al|空気極 O₂":{v:1.25,whkg:900,whl:900,wkg:250,density:1.15,usable:.82,cycle:1,sag:.20,label:"金属交換式"},
+"Al-Zn-In 海水用合金|空気極 O₂":{v:1.15,whkg:850,whl:800,wkg:320,density:1.15,usable:.84,cycle:1,sag:.18,label:"金属交換式"},
+"マグネシウム Mg|空気極 O₂":{v:1.45,whkg:650,whl:600,wkg:450,density:.90,usable:.78,cycle:1,sag:.18,label:"金属交換式"},
+"Mg-Al-Zn 合金|空気極 O₂":{v:1.35,whkg:550,whl:480,wkg:550,density:1.00,usable:.80,cycle:1,sag:.16,label:"金属交換式"},
+"鉛 Pb|PbO₂":{v:2.05,whkg:45,whl:75,wkg:450,density:1.60,usable:.75,cycle:500,sag:.12,label:"二次電池"},
+"カドミウム Cd|NiOOH":{v:1.20,whkg:55,whl:100,wkg:800,density:1.35,usable:.85,cycle:1500,sag:.10,label:"二次電池"},
+"亜鉛 Zn|Ag₂O":{v:1.55,whkg:180,whl:280,wkg:500,density:1.60,usable:.88,cycle:1,sag:.12,label:"一次電池"},
+"亜鉛 Zn|HgO":{v:1.35,whkg:120,whl:220,wkg:300,density:1.55,usable:.88,cycle:1,sag:.14,label:"一次電池"},
+"黒鉛 Graphite|LFP系":{v:3.20,whkg:175,whl:260,wkg:1600,density:1.25,usable:.92,cycle:3000,sag:.08,label:"二次電池"},
+"黒鉛 Graphite|NMC系":{v:3.65,whkg:240,whl:300,wkg:2000,density:1.20,usable:.92,cycle:1500,sag:.08,label:"二次電池"},
+"黒鉛 Graphite|LCO系":{v:3.70,whkg:210,whl:280,wkg:1500,density:1.25,usable:.90,cycle:1000,sag:.09,label:"二次電池"},
+"黒鉛 Graphite|LMO系":{v:3.90,whkg:160,whl:230,wkg:1800,density:1.20,usable:.90,cycle:1200,sag:.08,label:"二次電池"},
+"シリコン Si|NMC系":{v:3.70,whkg:280,whl:340,wkg:1800,density:1.15,usable:.90,cycle:800,sag:.09,label:"二次電池"},
+"LTO (Li4Ti5O12)|NMC系":{v:2.30,whkg:100,whl:160,wkg:3000,density:1.30,usable:.90,cycle:6000,sag:.06,label:"二次電池"},
+"LTO (Li4Ti5O12)|LFP系":{v:1.90,whkg:80,whl:140,wkg:2500,density:1.30,usable:.90,cycle:8000,sag:.06,label:"二次電池"},
+"リチウム Li|硫黄 S":{v:2.10,whkg:400,whl:280,wkg:900,density:.80,usable:.85,cycle:400,sag:.12,label:"二次電池"},
+"リチウム Li|FeS₂":{v:1.50,whkg:260,whl:260,wkg:900,density:1.00,usable:.90,cycle:1,sag:.12,label:"一次電池"},
+"リチウム Li|MnO₂":{v:3.00,whkg:270,whl:300,wkg:700,density:1.10,usable:.90,cycle:1,sag:.10,label:"一次電池"},
+"ナトリウム Na|Prussian Blue":{v:3.00,whkg:140,whl:200,wkg:1200,density:1.10,usable:.90,cycle:2500,sag:.09,label:"二次電池"},
+"カリウム K|Prussian Blue":{v:3.30,whkg:120,whl:180,wkg:1000,density:1.00,usable:.88,cycle:1000,sag:.10,label:"二次電池"}
 };
-const coolingModes={
-none:{mass:0,power:0,thermal:.52,cost:0},
-air:{mass:.018,power:.008,thermal:.68,cost:.08},
-liquid:{mass:.045,power:.012,thermal:.86,cost:.20},
-direct:{mass:.065,power:.020,thermal:.98,cost:.45}
-};
-
-function fillSelect(id,obj,def){
- const s=document.getElementById(id);
- Object.keys(obj).forEach(k=>{const o=document.createElement("option");o.value=k;o.textContent=k;s.appendChild(o)});
- s.value=def;
-}
-fillSelect("anode",anodes,"アルミ Al");
-fillSelect("cathode",cathodes,"空気極 O₂");
-fillSelect("electrolyte",electrolytes,"天然海水");
-fillSelect("architecture",architectures,"金属空気セル");
 
 function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function pairKey(a,c){return a+"|"+c}
+
+function compatibility(aName,cName,E,X){
+ const A=anodes[aName],C=cathodes[cName];
+ let v=C.c.includes(E.type)?1:.58;
+ if(A.t&&!A.t.includes(E.type))v*=.76;
+ if(C.air&&!X.air)v*=.82;
+ if(X.air&&!C.air)v*=.75;
+ if(aName==="リチウム Li"&&!["有機","固体"].includes(E.type))v*=.20;
+ if(aName==="ナトリウム Na"&&!["有機","固体","溶融塩"].includes(E.type))v*=.22;
+ if(aName==="カリウム K"&&!["有機","固体"].includes(E.type))v*=.18;
+ return clamp(v,.08,1);
+}
+
+function genericProfile(aName,cName,E,X){
+ const A=anodes[aName],C=cathodes[cName];
+ if(cName==="活性炭キャパシタ極") return {whkg:25,whl:35,wkg:7000,density:1.05,usable:.95,cycle:100000,sag:.05,label:"キャパシタ系"};
+ if(C.air) return {whkg:450,whl:420,wkg:300,density:1.05,usable:.78,cycle:1,sag:.20,label:"金属空気系"};
+ if(X===architectures["フローセル"]) return {whkg:55,whl:70,wkg:600,density:1.20,usable:.88,cycle:5000,sag:.10,label:"フロー系"};
+ if(E.type==="固体") return {whkg:280,whl:320,wkg:1200,density:1.15,usable:.90,cycle:1500,sag:.10,label:"全固体系"};
+ if(E.type==="有機") return {whkg:180,whl:230,wkg:1200,density:1.15,usable:.90,cycle:1000,sag:.10,label:"有機電解液系"};
+ if(E.type==="イオン液体") return {whkg:110,whl:150,wkg:700,density:1.20,usable:.88,cycle:1500,sag:.12,label:"イオン液体系"};
+ if(E.type==="溶融塩") return {whkg:130,whl:180,wkg:500,density:1.30,usable:.85,cycle:1200,sag:.12,label:"溶融塩系"};
+ return {whkg:90,whl:140,wkg:600,density:1.35,usable:.85,cycle:600,sag:.12,label:"水系"};
+}
+
+function getProfile(aName,cName,E,X){
+ const p=pairProfiles[pairKey(aName,cName)];
+ return p?{...p}:{...genericProfile(aName,cName,E,X)};
+}
+
+function nominalCellVoltage(aName,cName,E,compat){
+ const A=anodes[aName],C=cathodes[cName];
+ const p=pairProfiles[pairKey(aName,cName)];
+ let v=p?p.v:(C.redox-A.redox)*.88;
+ v=Math.min(v,E.v*.94);
+ if(compat<.75)v*=.92;
+ return clamp(v,.15,5.0);
+}
+
+function allocateActive(aName,cName,Vsolid){
+ const A=anodes[aName],C=cathodes[cName];
+ if(C.air){
+   const mA=Vsolid*A.rho*.70;
+   const mC=Math.max(1,Vsolid*.08);
+   return {mA,mC,qAh:mA*A.cap*1000};
+ }
+ const ratio=A.cap/Math.max(C.cap,.02); // cathode mass / anode mass for charge balance
+ const denom=1/A.rho+ratio/C.rho;
+ const mA=Vsolid/Math.max(denom,.001);
+ const mC=mA*ratio;
+ const qAh=Math.min(mA*A.cap,mC*C.cap)*1000;
+ return {mA,mC,qAh};
+}
+
+function applyMassDensityLimit(parts,Vbox,profile){
+ const maxMass=Vbox*profile.density;
+ const fixed=parts.structure+parts.upgrade+parts.cellOverhead;
+ const scalable=parts.mA+parts.mC+parts.eMass;
+ const raw=fixed+scalable;
+ if(raw<=maxMass)return {...parts,mass:raw,scale:1};
+ const scale=clamp((maxMass-fixed)/Math.max(scalable,.001),.05,1);
+ return {...parts,mA:parts.mA*scale,mC:parts.mC*scale,eMass:parts.eMass*scale,qAh:parts.qAh*scale,mass:fixed+scalable*scale,scale};
+}
+
+function terminalVoltageAtPower(V,R,Pkw){
+ const P=Pkw*1000;
+ if(R<=0||P<=0)return V;
+ const disc=Math.max(0,V*V-4*R*P);
+ const I=(V-Math.sqrt(disc))/(2*R);
+ return Math.max(0,V-I*R);
+}
+
+const collectors={
+Cu:{mass:.045,power:1.08,cost:1.6,safe:.95,mfg:.98},
+Al:{mass:.018,power:1.00,cost:.6,safe:.92,mfg:.98},
+Ni:{mass:.050,power:.90,cost:2.2,safe:.96,mfg:.88},
+SS:{mass:.050,power:.70,cost:.7,safe:.98,mfg:.98},
+C:{mass:.015,power:.78,cost:1.9,safe:.99,mfg:.62}
+};
+const coolingModes={
+none:{mass:0,thermal:.52,cost:0,power:.88},
+air:{mass:.018,thermal:.68,cost:.08,power:.95},
+liquid:{mass:.045,thermal:.86,cost:.20,power:1.00},
+direct:{mass:.065,thermal:.98,cost:.45,power:1.05}
+};
+
 function el(id){return document.getElementById(id)}
-function pct(x){return Math.round(clamp(x,0,1)*100)}
-function moneyJPY(x){if(x>=1e8)return (x/1e8).toFixed(2)+" 億円";if(x>=1e4)return (x/1e4).toFixed(0)+" 万円";return Math.round(x)+" 円"}
+function pct(v){return Math.round(clamp(v,0,1)*100)}
+function moneyJPY(x){if(x>=1e8)return(x/1e8).toFixed(2)+" 億円";if(x>=1e4)return(x/1e4).toFixed(0)+" 万円";return Math.round(x)+" 円"}
+function fillSelect(id,obj,def){const s=el(id);s.innerHTML="";Object.keys(obj).forEach(k=>{const o=document.createElement("option");o.value=k;o.textContent=k;s.appendChild(o)});s.value=def}
+fillSelect("anode",anodes,"アルミ Al");fillSelect("cathode",cathodes,"空気極 O₂");fillSelect("electrolyte",electrolytes,"天然海水");fillSelect("architecture",architectures,"金属空気セル");
 
 function labels(){
- el("volLabel").textContent=el("volume").value+" L";
- el("fillLabel").textContent=el("fill").value+" %";
- el("gapLabel").textContent=el("gap").value+" mm";
- el("thickLabel").textContent=el("thickness").value+" μm";
- el("porosityLabel").textContent=el("porosity").value+" %";
- el("sepLabel").textContent=el("sepThickness").value+" μm";
- el("elyteLabel").textContent=el("elyteRatio").value+" %";
+ el("volLabel").textContent=el("volume").value+" L";el("fillLabel").textContent=el("fill").value+" %";el("gapLabel").textContent=el("gap").value+" mm";
+ el("thickLabel").textContent=el("thickness").value+" μm";el("porosityLabel").textContent=el("porosity").value+" %";el("sepLabel").textContent=el("sepThickness").value+" μm";el("elyteLabel").textContent=el("elyteRatio").value+" %";
 }
-["volume","fill","gap","thickness","porosity","sepThickness","elyteRatio"].forEach(id=>el(id).addEventListener("input",labels));
-labels();
+["volume","fill","gap","thickness","porosity","sepThickness","elyteRatio"].forEach(id=>el(id).addEventListener("input",labels));labels();
 
 let battery=null;
-
 function buildBattery(){
- const A=anodes[el("anode").value], C=cathodes[el("cathode").value], E=electrolytes[el("electrolyte").value], X=architectures[el("architecture").value];
- const K=collectors[el("collector").value], Cool=coolingModes[el("coolingMode").value];
- const series=clamp(+el("series").value||1,1,2000), parallel=clamp(+el("parallel").value||1,1,200);
- const Vbox=+el("volume").value, fill=+el("fill").value/100, gap=+el("gap").value;
- const thick=+el("thickness").value, porosity=+el("porosity").value/100, sepT=+el("sepThickness").value, eratio=+el("elyteRatio").value/100;
- const carbon=el("carbon").checked, separator=el("separator").checked, catalyst=el("catalyst").checked, bms=el("bms").checked;
+ const aName=el("anode").value,cName=el("cathode").value,eName=el("electrolyte").value,xName=el("architecture").value;
+ const A=anodes[aName],C=cathodes[cName],E=electrolytes[eName],X=architectures[xName],K=collectors[el("collector").value],Cool=coolingModes[el("coolingMode").value];
+ const S=clamp(+el("series").value||1,1,2000),P=clamp(+el("parallel").value||1,1,200),cellCount=S*P;
+ const Vbox=+el("volume").value,fill=+el("fill").value/100,gap=+el("gap").value,thick=+el("thickness").value,por=+el("porosity").value/100,sepT=+el("sepThickness").value,eratio=+el("elyteRatio").value/100;
+ const carbon=el("carbon").checked,separator=el("separator").checked,catalyst=el("catalyst").checked,bms=el("bms").checked;
  const inv=+el("inverter").value;
+ const compat=compatibility(aName,cName,E,X),profile=getProfile(aName,cName,E,X),cellV=nominalCellVoltage(aName,cName,E,compat),packV=cellV*S;
 
- let compat=C.c.includes(E.type)?1:.55;
- if(A.t&&!A.t.includes(E.type))compat*=.78;
- if(C.air&&el("architecture").value!=="金属空気セル")compat*=.82;
- if(X.air&&!C.air)compat*=.72;
- if(el("anode").value==="リチウム Li"&&!["有機","固体"].includes(E.type))compat*=.22;
- if(el("anode").value==="ナトリウム Na"&&!["有機","固体","溶融塩"].includes(E.type))compat*=.24;
- if(el("anode").value==="カリウム K"&&!["有機","固体"].includes(E.type))compat*=.20;
+ const cellPackaging=clamp(1-cellCount*.000025,.72,1);
+ const Vsolid=Vbox*fill*X.active*(1-.50*por)*cellPackaging;
+ let act=allocateActive(aName,cName,Vsolid);
 
- let cellV=(C.pot-A.pot)*.82;
- cellV=Math.max(.12,Math.min(cellV,E.v*.92));
- let packV=cellV*series;
+ const eMass=Vbox*(1-fill)*E.rho*.55*eratio;
+ const structure=Vbox*X.struct;
+ const cellOverhead=Math.min(Vbox*.13,cellCount*.008);
+ const upgrade=Vbox*K.mass+(carbon?Vbox*.010:0)+(separator?Vbox*.004:0)+(bms?Vbox*.006:0)+Vbox*Cool.mass;
+ let limited=applyMassDensityLimit({...act,eMass,structure,upgrade,cellOverhead},Vbox,profile);
 
- const invMin={400:220,800:450,1200:700}[inv], invMax={400:520,800:950,1200:1450}[inv];
- let inverterFactor=(packV<invMin)?clamp(packV/invMin,.25,1):(packV>invMax?clamp(invMax/packV,.4,1):1);
+ const opt=X.optThick;
+ const logRatio=Math.abs(Math.log(Math.max(thick,20)/opt));
+ const thicknessEnergy=clamp(Math.exp(-.10*logRatio),.76,1);
+ const porEnergy=clamp(1-.22*Math.max(0,por-.25),.86,1.03);
+ const electrolyteUtil=clamp(.72+.32*eratio,.72,1.08);
+ let util=.82*compat*(.88+.12*A.stable)*thicknessEnergy*porEnergy*electrolyteUtil;
+ if(C.air)util*=clamp(1-A.self*.22,.76,1);
+ util=clamp(util,.06,.93);
+ const chemKWh=limited.qAh*cellV*util/1000;
 
- let activeFraction=fill*(1-porosity*.55);
- let activeVol=Vbox*activeFraction*.43;
- let anodeMass=activeVol*A.rho;
- let cathodeMass=anodeMass*C.m*.58;
- let electrolyteMass=Vbox*(1-fill)*E.m*.70*eratio;
- let structuralMass=Vbox*.10*X.m;
- let collectorMass=Vbox*.0035*K.rho*(1+series/500);
- let sepMass=Vbox*.006*(sepT/25);
- let coolMass=Vbox*Cool.mass;
- let addMass=(carbon?Vbox*.012:0)+(separator?Vbox*.004:0)+(bms?Vbox*.008:0);
- let mass=anodeMass+cathodeMass+electrolyteMass+structuralMass+collectorMass+sepMass+coolMass+addMass;
+ let envWhkg=profile.whkg*X.e*thicknessEnergy*porEnergy;
+ let envWhl=profile.whl*X.e*thicknessEnergy*porEnergy*cellPackaging;
+ let energyKWh=Math.max(.01,Math.min(chemKWh,limited.mass*envWhkg/1000,Vbox*envWhl/1000));
 
- let thicknessUtil=clamp(1.12-(thick-200)/1900,.55,1.12);
- let porosityUtil=clamp(.88+porosity*.55,.88,1.20);
- let electrolyteUtil=clamp(.70+eratio*.35,.78,1.16);
- let utilization=(.45+.30*A.stable)*thicknessUtil*porosityUtil*electrolyteUtil*compat;
- if(E.type==="海水"&&el("anode").value==="アルミ Al")utilization*=.82;
- utilization=clamp(utilization,.08,.93);
+ const packAh=energyKWh*1000/Math.max(packV,.1);
+ const cellAh=packAh/Math.max(P,1);
 
- // Total electrochemical charge comes from the total active mass of the whole pack.
- // Splitting that mass into more series cells raises voltage but lowers pack Ah proportionally,
- // so total energy must not increase merely because series count is increased.
- let totalAhEquivalent=anodeMass*A.cap*1000*utilization;
- let packAh=totalAhEquivalent/series;
- let energyKWh=packAh*cellV*series*.60*X.e/1000;
- if(C.air)energyKWh*=1.18;
+ let geomPower=clamp((opt/thick)**.42,.45,1.45)*clamp(.82+por*.72,.82,1.28)*clamp((25/sepT)**.20,.75,1.20)*clamp(.90+E.cond/60,.90,1.20);
+ geomPower*=K.power*Cool.power*X.p*compat;
+ if(carbon)geomPower*=1.12;if(separator)geomPower*=1.04;if(catalyst&&C.air)geomPower*=1.38;
+ geomPower*=clamp(1-.035*Math.max(0,gap-5),.70,1.08);
 
- // Resistance and C-rate
- let ionic=(gap/5)*(sepT/25)/(Math.max(E.cond,.08));
- let thickPenalty=clamp(thick/220,.55,4.5);
- let poreGain=clamp(1.2-porosity*.65,.65,1.15);
- let baseR=.035*ionic*thickPenalty*poreGain/(X.p*A.power*C.p*Math.max(compat,.20));
- if(carbon)baseR*=.74;
- if(separator)baseR*=.86;
- if(catalyst&&C.air)baseR*=.72;
- baseR*=K.res;
- let packR=baseR*series/(parallel*parallel)*(.90+100/Vbox*.15);
- packR=Math.max(.001,packR);
+ let chemMaxPower=Math.min(limited.mass*profile.wkg/1000*geomPower,energyKWh*(profile.wkg/profile.whkg)*geomPower);
+ const invMin={400:220,800:450,1200:700}[inv],invMax={400:520,800:950,1200:1450}[inv];
+ let invFactor=packV<invMin?clamp(packV/invMin,.20,1):(packV>invMax?clamp(invMax/packV,.35,1):1);
+ const thermal=clamp(.36+.24*X.thermal+.18*E.temp+.28*Cool.thermal-(fill-.60)*.20-(thick>opt?Math.min(.10,(thick/opt-1)*.04):0),.18,1);
+ let maxPower=Math.max(.1,chemMaxPower*invFactor*(.80+.20*thermal));
 
- let cRate=clamp((2.8*A.power*C.p*X.p*E.cond/(thickPenalty*poreGain))*(carbon?1.18:1)*(catalyst&&C.air?1.25:1),.15,12);
- let maxCurrent=Math.max(5,packAh*cRate);
- let ohmicPower=packV*packV/(4*packR)/1000;
- let cPower=packV*maxCurrent/1000;
+ let sag=profile.sag*clamp((thick/opt)**.28,.75,1.45)*clamp((.30/Math.max(por,.08))**.18,.82,1.25)*clamp((sepT/25)**.15,.84,1.20);
+ sag*=carbon?.90:1;sag*=separator?.95:1;sag=clamp(sag,.035,.38);
+ // Equivalent pack resistance is scaled with V², so merely increasing S does not create free power.
+ const R=sag*(1-sag)*packV*packV/Math.max(chemMaxPower*1000,1);
+ const peakV=terminalVoltageAtPower(packV,R,maxPower);
+ const cRate=maxPower/Math.max(energyKWh,.001);
 
- let thermalBase=.42+.24*X.t+.16*E.temp+.34*Cool.thermal-(fill-.6)*.30-(thick/1200)*.08;
- let thermal=clamp(thermalBase,.15,1);
- let maxPower=Math.min(ohmicPower,cPower)*(.58+.42*thermal)*inverterFactor;
+ let safety=clamp(.26+.23*E.safe+.17*X.safe+.14*A.stable+.09*K.safe+(separator?.09:0)+(bms?.07:0)+.04*Cool.thermal-(por>.55?.04:0),.05,1);
+ let mfg=clamp((A.mfg+C.mfg+E.mfg+X.mfg+K.mfg)/5-cellCount*.00001-(sepT<15?.06:0)+(bms?.02:0),.05,1);
+ let cycle=profile.cycle===1?1:Math.max(40,Math.round(profile.cycle*thicknessEnergy*(.92+.14*thermal)*(bms?1.10:1)*(separator?1.03:1)));
+ let whkg=energyKWh*1000/limited.mass,whl=energyKWh*1000/Vbox;
 
- let peakI=Math.min(maxCurrent, maxPower*1000/Math.max(packV,.1));
- let sag=peakI*packR;
- let peakV=Math.max(packV-sag,0);
+ const materialIndex=limited.mA*A.cost+limited.mC*C.cost+limited.eMass*E.cost+Vbox*K.cost*.08;
+ const complexity=(1.25-mfg)*90000+cellCount*38+(bms?70000:0)+(catalyst?Vbox*1200:0)+Vbox*Cool.cost*1000;
+ const costJPY=Math.max(30000,(materialIndex*800+Vbox*500+complexity)*X.cost);
 
- let safety=.26+.23*E.safe+.18*X.s+.14*A.stable+.10*K.safe+(separator?.10:0)+(bms?.08:0)-(porosity>.55?.05:0);
- if(el("anode").value==="リチウム Li")safety-=.10;
- safety=clamp(safety,.05,1);
-
- let self=A.self*(1+porosity*.55)*(E.type==="海水"?1.18:1);
- let cycleLife=(120+950*A.stable*E.safe*X.s)*(1-self*.55)*(bms?1.18:1)*(Cool.thermal>.8?1.12:1)*(thick<500?1.08:.92);
- if(C.air)cycleLife*=.36;
- cycleLife=Math.max(25,Math.round(cycleLife));
-
- let whkg=energyKWh*1000/mass, whl=energyKWh*1000/Vbox;
-
- let mfg=clamp((A.mfg+C.mfg+E.mfg+X.mfg+K.mfg)/5 -(porosity>.55?.08:0)-(sepT<15?.08:0)+(bms?.02:0),.05,1);
-
- // Rough game price
- let materialIndex=anodeMass*A.cost+cathodeMass*C.cost+electrolyteMass*E.cost+collectorMass*K.cost;
- let complexity=(1.3-X.mfg)*180000+(1.2-mfg)*120000;
- let costJPY=(materialIndex*850 + Vbox*650 + series*parallel*40 + complexity + (catalyst?Vbox*1800:0)+(bms?90000:0)+Vbox*Cool.cost*1200)*X.cost;
- costJPY=Math.max(30000,costJPY);
-
- // Degradation per 100 km-equivalent hard use
- let degradation=clamp(.00035+(1-A.stable)*.0015+(1-E.safe)*.0007+(1-thermal)*.0012+self*.0006-(bms?.00025:0),.0001,.008);
-
- battery={A,C,E,X,K,Cool,series,parallel,cellV,packV,packAh,energyKWh,maxPower,maxCurrent,cRate,mass,packR,peakV,thermal,safety,cycleLife,whkg,whl,costJPY,mfg,compat,self,degradation,inverterFactor,inv,thick,porosity,sepT,eratio,
- desc:[el("anode").value,el("electrolyte").value,el("cathode").value,el("architecture").value,el("collector").value,el("coolingMode").value]};
-
+ battery={aName,cName,eName,xName,A,C,E,X,K,Cool,profile,compat,S,P,cellCount,cellV,packV,packAh,cellAh,energyKWh,maxPower,mass:limited.mass,R,peakV,cRate,thermal,safety,mfg,cycle,whkg,whl,costJPY,usable:profile.usable,invFactor,thick,por,sepT,eratio};
  render();
 }
 
 function render(){
  const b=battery;
- el("cellV").textContent=b.cellV.toFixed(2)+" V";
- el("packV").textContent=b.packV.toFixed(0)+" V";
- el("energy").textContent=b.energyKWh.toFixed(1)+" kWh";
- el("maxPower").textContent=b.maxPower.toFixed(0)+" kW";
- el("sagV").textContent=b.peakV.toFixed(0)+" V";
- el("crate").textContent=b.cRate.toFixed(1)+" C";
- el("mass").textContent=b.mass.toFixed(0)+" kg";
- el("whkg").textContent=b.whkg.toFixed(0);
- el("whl").textContent=b.whl.toFixed(0);
- el("resistance").textContent=(b.packR*1000).toFixed(1)+" mΩ";
- el("cost").textContent=moneyJPY(b.costJPY);
- el("life").textContent=b.cycleLife+" cyc";
+ el("cellV").textContent=b.cellV.toFixed(2)+" V";el("packV").textContent=b.packV.toFixed(0)+" V";el("energy").textContent=b.energyKWh.toFixed(1)+" kWh";el("maxPower").textContent=b.maxPower.toFixed(0)+" kW";
+ el("sagV").textContent=b.peakV.toFixed(0)+" V";el("crate").textContent=b.cRate.toFixed(1)+" C";el("mass").textContent=b.mass.toFixed(0)+" kg";el("whkg").textContent=b.whkg.toFixed(0);el("whl").textContent=b.whl.toFixed(0);
+ el("resistance").textContent=(b.R*1000).toFixed(1)+" mΩ";el("cost").textContent=moneyJPY(b.costJPY);el("life").textContent=b.cycle===1?b.profile.label:b.cycle+" cyc";
+ const pScore=clamp((b.maxPower*1000/b.mass)/2500,0,1);
+ el("barPower").style.width=pScore*100+"%";el("txtPower").textContent=pct(pScore)+"%";el("barThermal").style.width=b.thermal*100+"%";el("txtThermal").textContent=pct(b.thermal)+"%";el("barSafety").style.width=b.safety*100+"%";el("txtSafety").textContent=pct(b.safety)+"%";el("barMfg").style.width=b.mfg*100+"%";el("txtMfg").textContent=pct(b.mfg)+"%";
 
- let pScore=clamp(b.maxPower/500,0,1);
- el("barPower").style.width=(pScore*100)+"%"; el("txtPower").textContent=pct(pScore)+"%";
- el("barThermal").style.width=(b.thermal*100)+"%"; el("txtThermal").textContent=pct(b.thermal)+"%";
- el("barSafety").style.width=(b.safety*100)+"%"; el("txtSafety").textContent=pct(b.safety)+"%";
- el("barMfg").style.width=(b.mfg*100)+"%"; el("txtMfg").textContent=pct(b.mfg)+"%";
+ const notes=[];
+ if(b.compat<.45)notes.push("⛔ 化学的にかなり無理のある組合せ。");
+ else if(b.compat<.75)notes.push("⚠ 材料と電解液の相性が悪い。");
+ if(b.invFactor<.80)notes.push("⚠ パック電圧とインバータ級が不適合で出力制限。");
+ if(b.peakV<b.packV*.78)notes.push("⚠ 高負荷時の電圧降下が大きい。");
+ if(b.thick>b.X.optThick*2)notes.push("⚠ 厚電極：容量側には有利だが高出力に不利。");
+ if(b.por>.55)notes.push("⚠ 高孔率：反応面積は増えるが活物質密度が低下。");
+ if(b.cellCount>5000)notes.push("⚠ セル数が多く、配線・BMS・製造負担が大きい。");
+ if(!notes.length)notes.push("✓ このモデル上では大きな弱点のない設計。");
 
- let notes=[];
- if(b.compat<.45)notes.push("⛔ 材料・電解液の組合せが非常に悪い。");
- else if(b.compat<.75)notes.push("⚠ 材料・電解液の相性が悪い。");
- if(b.inverterFactor<.8)notes.push("⚠ パック電圧とインバータ級の相性が悪く出力制限。");
- if(b.peakV<b.packV*.72)notes.push("⚠ 高負荷時の電圧降下が大きい。");
- if(b.thermal<.55)notes.push("⚠ 熱余裕が小さく連続出力に弱い。");
- if(b.self>.30)notes.push("⚠ 自己放電・自己腐食が大きい。");
- if(b.safety<.55)notes.push("⚠ 安全マージンが小さい。");
- if(b.thick>700)notes.push("⚠ 厚電極：容量には有利だがイオン輸送が遅い。");
- if(b.porosity>.55)notes.push("⚠ 高孔率：出力に有利だが活物質密度が低下。");
- if(!notes.length)notes.push("✓ 大きな弱点のない設計。");
-
- el("log").textContent=
-`化学系: ${b.desc[0]} ｜ ${b.desc[1]} ｜ ${b.desc[2]}
-方式: ${b.desc[3]}
-集電体: ${b.desc[4]} / 冷却: ${b.desc[5]}
+ el("log").textContent=`化学系: ${b.aName} ｜ ${b.eName} ｜ ${b.cName}
+方式: ${b.xName}
+分類: ${b.profile.label}
 
 セル電圧: ${b.cellV.toFixed(3)} V
-直列 × 並列: ${b.series}S × ${b.parallel}P\n（直列数を増やしても総エネルギー自体は増えません）
+構成: ${b.S}S × ${b.P}P = ${b.cellCount} cells
 パック公称電圧: ${b.packV.toFixed(1)} V
-容量: ${b.packAh.toFixed(0)} Ah
+パック容量: ${b.packAh.toFixed(1)} Ah
+1セル相当容量: ${b.cellAh.toFixed(1)} Ah
 エネルギー: ${b.energyKWh.toFixed(2)} kWh
 最大出力: ${b.maxPower.toFixed(1)} kW
-10秒ピーク電圧: ${b.peakV.toFixed(1)} V
-内部抵抗: ${(b.packR*1000).toFixed(2)} mΩ
+ピーク負荷時電圧: ${b.peakV.toFixed(1)} V
+内部抵抗(等価): ${(b.R*1000).toFixed(2)} mΩ
 最大放電: ${b.cRate.toFixed(2)} C
 重量: ${b.mass.toFixed(1)} kg
 エネルギー密度: ${b.whkg.toFixed(0)} Wh/kg / ${b.whl.toFixed(0)} Wh/L
 推定コスト: ${moneyJPY(b.costJPY)}
-推定寿命: ${b.cycleLife} cycles
-100 km高負荷走行あたり劣化: ${(b.degradation*100).toFixed(3)} %
+寿命: ${b.cycle===1?b.profile.label:b.cycle+" cycles"}
+
+重要: 固定された電池箱では、直列・並列数を増やしただけでは総エネルギーは増えません。
+直列数は主に電圧、並列数は1セル容量・配線構成・セル数に影響します。
 
 ${notes.join("\n")}
 
-※教育ゲーム用近似モデル。実機設計値ではありません。`;
-
+※代表的な実用電池の性能帯を上限として使う教育ゲーム用近似モデルです。`;
  el("result").innerHTML="<b>PRO電池完成。</b><div class='tiny'>4種類の競技で性能を確認してください。</div>";
 }
 
+function cruisePackEff(b,pkw=20){const I=pkw*1000/Math.max(b.packV,.1),loss=I*I*b.R/1000;return clamp(pkw/(pkw+loss),.70,.995)}
+function degradationForEnergy(b,usedKWh,stress=1){
+ if(b.cycle===1)return null;
+ const efc=usedKWh/Math.max(b.energyKWh*b.usable,.01);
+ return .20*efc/b.cycle*stress; // fraction of capacity lost; cycle life approximated to ~80% SOH
+}
 function race(type){
  if(!battery)return;
- const b=battery, car=900+b.mass;
+ const b=battery,car=900+b.mass,g=9.81;
  if(type==="range"){
-   let aux=1.5; // kW
-   let cons=112*(1+.00043*(car-900))*(1+.03*(1-b.thermal));
-   let eff=.92-clamp(b.packR*.75,0,.13);
-   let usable=b.energyKWh*clamp(.94-b.self*.10,.72,.94);
-   let km=usable*1000*eff/(cons+aux/80*1000);
-   el("result").innerHTML=`<b>航続距離チャレンジ</b><div class="score">${km.toFixed(0)} km</div><div class="tiny">車両総重量 ${car.toFixed(0)} kg / 実効消費 ${(cons).toFixed(0)} Wh/km / usable ${usable.toFixed(1)} kWh</div>`;
+   const road=125*(1+.00042*(car-900)),eff=cruisePackEff(b,18),whkm=road/(.90*eff)+12,usable=b.energyKWh*b.usable,km=usable*1000/whkm;
+   el("result").innerHTML=`<b>航続距離チャレンジ</b><div class="score">${km.toFixed(0)} km</div><div class="tiny">使用可能 ${usable.toFixed(1)} kWh / 推定消費 ${whkm.toFixed(0)} Wh/km / 総重量 ${car.toFixed(0)} kg</div>`;
  }
  if(type==="sprint"){
-   let p=Math.min(b.maxPower,650)*.90;
-   let specific=p*1000/car;
-   let sec=clamp(11.0-.0205*specific,2.1,16);
-   sec*=1+(1-b.thermal)*.10+(1-b.inverterFactor)*.18;
-   let sagPct=(b.packV-b.peakV)/Math.max(b.packV,1);
-   sec*=1+sagPct*.22;
+   const p=Math.min(b.maxPower,650)*.90,KE=.5*car*(100/3.6)**2/1000;
+   let sec=Math.max(2.6,.75+KE/Math.max(.69*p,1));sec*=1+(1-b.thermal)*.04;
    el("result").innerHTML=`<b>0–100 km/h</b><div class="score">${sec.toFixed(2)} s</div><div class="tiny">利用出力 ${p.toFixed(0)} kW / ピーク電圧 ${b.peakV.toFixed(0)} V / 総重量 ${car.toFixed(0)} kg</div>`;
  }
  if(type==="hill"){
-   let pCont=b.maxPower*(.30+.50*b.thermal)*1000;
-   let v=5,g=9.81;
-   for(let i=0;i<240;i++){
-     let force=car*g*.08+.012*car*g+.5*1.2*.58*v*v;
-     let vv=pCont/Math.max(force,1);
-     v=.72*v+.28*clamp(vv,3,43);
-   }
-   let time=5000/v;
-   let heat=(Math.min(b.maxCurrent,pCont/Math.max(b.packV,1))**2)*b.packR*time/3600000;
-   let penalty=1+Math.max(0,heat-2)*(.02+(1-b.thermal)*.04);
-   time*=penalty;
-   let min=Math.floor(time/60),sec=Math.round(time%60);
-   el("result").innerHTML=`<b>5 km・平均8% ヒルクライム</b><div class="score">${min}:${String(sec).padStart(2,"0")}</div><div class="tiny">連続出力 ${(pCont/1000).toFixed(0)} kW / 発熱損失 ${heat.toFixed(1)} kWh相当 / 総重量 ${car.toFixed(0)} kg</div>`;
+   const grade=.08,dist=5000,pCont=Math.min(b.maxPower*(.42+.43*b.thermal),500)*1000;
+   let v=5;for(let i=0;i<250;i++){const force=car*g*grade+.012*car*g+.5*1.2*.58*v*v;v=.72*v+.28*clamp(pCont/Math.max(force,1),3,47)}
+   let time=dist/v,used=pCont*time/3.6e6;
+   if(used>b.energyKWh*b.usable){const ratio=(b.energyKWh*b.usable)/used;time/=Math.max(ratio,.15)}
+   const min=Math.floor(time/60),sec=Math.round(time%60);
+   el("result").innerHTML=`<b>5 km・平均8% ヒルクライム</b><div class="score">${min}:${String(sec).padStart(2,"0")}</div><div class="tiny">連続出力 ${(pCont/1000).toFixed(0)} kW / 使用電力量 ${used.toFixed(1)} kWh / 総重量 ${car.toFixed(0)} kg</div>`;
  }
  if(type==="endurance"){
-   let baseCons=150*(1+.00042*(car-900));
-   let avgPower=55; // kW
-   let current=avgPower*1000/Math.max(b.packV,1);
-   let heatKW=current*current*b.packR/1000;
-   let tempPenalty=clamp((heatKW/18)*(1-b.thermal),0,.30);
-   let degradation=b.degradation*(1+tempPenalty*4)*(1+Math.max(0,b.cRate-3)*.04);
-   let usable=b.energyKWh*(1-degradation);
-   let energyNeed=baseCons*100/1000;
-   let finish=usable>=energyNeed;
-   let time=finish? (100/(105*(1-tempPenalty)))*60 : (usable/energyNeed)*57;
-   el("result").innerHTML=`<b>100 km耐久</b><div class="score">${finish?"完走":"電欠"} / ${time.toFixed(1)} min</div><div class="tiny">走行後SOH低下 ${(degradation*100).toFixed(3)}% / 熱損失 ${heatKW.toFixed(1)} kW / 必要 ${energyNeed.toFixed(1)} kWh</div>`;
+   const road=132*(1+.00042*(car-900)),eff=cruisePackEff(b,28),whkm=road/(.90*eff)+15,need=whkm*.100;
+   const usable=b.energyKWh*b.usable,finish=usable>=need,completed=Math.min(100,100*usable/need);
+   const stress=1+(1-b.thermal)*.8+Math.max(0,b.cRate-3)*.03;
+   const deg=degradationForEnergy(b,Math.min(need,usable),stress);
+   const avgSpeed=finish?105*(.92+.08*b.thermal):85;
+   const minutes=completed/avgSpeed*60;
+   el("result").innerHTML=`<b>100 km耐久</b><div class="score">${finish?"完走":"電欠 "+completed.toFixed(0)+" km"} / ${minutes.toFixed(1)} min</div><div class="tiny">必要 ${need.toFixed(1)} kWh / ${deg===null?"一次・交換式のためSOH評価なし":"推定SOH低下 "+(deg*100).toFixed(4)+"%"}</div>`;
  }
 }
-
 el("buildBtn").addEventListener("click",buildBattery);
 document.querySelectorAll("[data-race]").forEach(btn=>btn.addEventListener("click",()=>race(btn.dataset.race)));
 buildBattery();
+
 </script>
 </body>
 </html>
