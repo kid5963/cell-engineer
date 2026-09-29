@@ -21,7 +21,7 @@ select,input[type=range]{width:100%}select{background:#0e131b;color:var(--t);bor
 footer{padding:0 16px 28px;color:var(--m);font-size:12px}footer .credit{font-size:14px;color:#e2e8f0}
 </style></head>
 <body>
-<header><h1>CELL ENGINEER <span style="font-size:.38em;color:#93c5fd">v2.0 REALISTIC</span></h1><div class="sub">Battery Racing Lab — 現実寄りに再調整した通常版</div></header>
+<header><h1>CELL ENGINEER <span style="font-size:.38em;color:#93c5fd">v2.1 REALISTIC</span></h1><div class="sub">Battery Racing Lab — 現実寄りに再調整した通常版</div></header>
 <main>
 <section class="card">
 <h2>1. 電池を設計</h2>
@@ -61,7 +61,7 @@ footer{padding:0 16px 28px;color:var(--m);font-size:12px}footer .credit{font-siz
 </section>
 <section class="card" style="grid-column:1/-1"><h2>設計ログ</h2><div id="log" class="log">—</div></section>
 </main>
-<footer><div class="credit">© 2026 kid5963 — CELL ENGINEER <span style="color:#a8b0bf">Realistic Model v3</span></div><div>Concept / game design: kid5963</div><div style="margin-top:6px">教育ゲーム用の近似モデルです。代表的な実用電池のパック性能を基準に味付けしています。</div></footer>
+<footer><div class="credit">© 2026 kid5963 — CELL ENGINEER <span style="color:#a8b0bf">Realistic Model v2.1</span></div><div>Concept / game design: kid5963</div><div style="margin-top:6px">教育ゲーム用の近似モデルです。代表的な実用電池のパック性能を基準に味付けしています。</div></footer>
 <script>
 
 document.addEventListener("DOMContentLoaded",()=>{const n=document.getElementById("previewNotice");if(n)n.style.display="none";});
@@ -318,19 +318,18 @@ function buildBattery(){
  render();
 }
 
+
 function render(){
  const b=battery;
- el("sV").textContent=b.packV.toFixed(0)+" V";
- el("sE").textContent=b.energyKWh.toFixed(1)+" kWh";
- el("sP").textContent=b.maxPower.toFixed(0)+" kW";
- el("sM").textContent=b.mass.toFixed(0)+" kg";
- el("sR").textContent=(b.R*1000).toFixed(1)+" mΩ";
- el("sLife").textContent=b.cycle===1?b.profile.label:b.cycle+" cyc";
- const eN=clamp(b.whkg/350,0,1),pN=clamp((b.maxPower*1000/b.mass)/2500,0,1);
- el("bEnergy").style.width=eN*100+"%";el("tEnergy").textContent=Math.round(b.whkg)+" Wh/kg";
- el("bPower").style.width=pN*100+"%";el("tPower").textContent=Math.round(b.maxPower*1000/b.mass)+" W/kg";
- el("bThermal").style.width=b.thermal*100+"%";el("tThermal").textContent=pct(b.thermal);
- el("bSafety").style.width=b.safety*100+"%";el("tSafety").textContent=pct(b.safety);
+ el("cellV").textContent=b.cellV.toFixed(2)+" V";
+ el("packV").textContent=b.packV.toFixed(0)+" V";
+ el("energy").textContent=b.energyKWh.toFixed(1)+" kWh";
+ el("power").textContent=b.maxPower.toFixed(0)+" kW";
+ el("mass").textContent=b.mass.toFixed(0)+" kg";
+ el("whkg").textContent=b.whkg.toFixed(0);
+ el("whl").textContent=b.whl.toFixed(0);
+ el("resistance").textContent=(b.R*1000).toFixed(1)+" mΩ";
+ el("life").textContent=b.cycle===1?b.profile.label:b.cycle+" cyc";
 
  const notes=[];
  if(b.compat<.45)notes.push("⛔ 材料・電解液の相性が非常に悪い。");
@@ -396,7 +395,8 @@ function race(type){
    el("result").innerHTML=`<h3>5 km・平均8% ヒルクライム</h3><div class="score">${min}:${String(sec).padStart(2,"0")} <span class="tiny">Rank ${rank}</span></div><div class="tiny">連続許容出力 ${(pCont/1000).toFixed(0)} kW ・ 使用電力量 ${energy.toFixed(1)} kWh ・ 総重量 ${car.toFixed(0)} kg</div>`;
  }
 }
-el("build").addEventListener("click",buildBattery);
+el("buildBtn").addEventListener("click",buildBattery);
+document.querySelectorAll("[data-race]").forEach(btn=>btn.addEventListener("click",()=>race(btn.dataset.race)));
 buildBattery();
 
 </script></body></html>
