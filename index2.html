@@ -69,7 +69,7 @@ footer .credit{font-size:14px;color:#e2e8f0;margin-bottom:4px}
 </head>
 <body>
 <header>
-<h1>CELL ENGINEER <span class="pro">PRO</span></h1>
+<h1>CELL ENGINEER <span class="pro">PRO v1.1</span></h1>
 <div class="sub">Battery Racing Lab — 上級電池設計・EV競技シミュレーター</div>
 </header>
 
@@ -338,8 +338,11 @@ function buildBattery(){
  if(E.type==="海水"&&el("anode").value==="アルミ Al")utilization*=.82;
  utilization=clamp(utilization,.08,.93);
 
- let ahPerParallel=(anodeMass*A.cap*1000*utilization)/parallel;
- let packAh=ahPerParallel*parallel;
+ // Total electrochemical charge comes from the total active mass of the whole pack.
+ // Splitting that mass into more series cells raises voltage but lowers pack Ah proportionally,
+ // so total energy must not increase merely because series count is increased.
+ let totalAhEquivalent=anodeMass*A.cap*1000*utilization;
+ let packAh=totalAhEquivalent/series;
  let energyKWh=packAh*cellV*series*.60*X.e/1000;
  if(C.air)energyKWh*=1.18;
 
@@ -435,7 +438,7 @@ function render(){
 集電体: ${b.desc[4]} / 冷却: ${b.desc[5]}
 
 セル電圧: ${b.cellV.toFixed(3)} V
-直列 × 並列: ${b.series}S × ${b.parallel}P
+直列 × 並列: ${b.series}S × ${b.parallel}P\n（直列数を増やしても総エネルギー自体は増えません）
 パック公称電圧: ${b.packV.toFixed(1)} V
 容量: ${b.packAh.toFixed(0)} Ah
 エネルギー: ${b.energyKWh.toFixed(2)} kWh
