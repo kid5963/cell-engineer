@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="author" content="kid5963">
+<meta name="copyright" content="© 2026 kid5963">
+<meta name="creator" content="kid5963">
+<meta name="theme-color" content="#0d1117">
+<meta property="og:title" content="CELL ENGINEER PRO — Battery Racing Lab">
+<meta property="og:description" content="電池を詳細設計し、EVに搭載して航続距離・加速・ヒルクライム・耐久を競う上級版思考実験ゲーム。">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<title>CELL ENGINEER PRO — Battery Racing Lab</title>
+<!-- CELL ENGINEER PRO concept/design: kid5963 | © 2026 kid5963 -->
+<style>
+:root{
+ --bg:#0b0f14;--panel:#151b23;--panel2:#1d2632;--text:#f2f6fb;--muted:#a9b5c4;
+ --line:#303a48;--good:#6ee7b7;--blue:#60a5fa;--warn:#fbbf24;--bad:#fb7185;--violet:#c084fc;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:linear-gradient(180deg,#080b10,#101722 44%,#0b0f14);color:var(--text);
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic UI",Meiryo,sans-serif}
+header,main,footer{max-width:1250px;margin:auto}
+header{padding:22px 16px 10px}
+h1{font-size:clamp(30px,6vw,52px);margin:0;letter-spacing:.045em}
+.pro{display:inline-block;margin-left:8px;padding:4px 9px;border-radius:999px;background:#2d1d4a;color:#e9d5ff;font-size:.38em;vertical-align:middle}
+.sub{color:var(--muted);font-size:14px;margin-top:4px}
+main{padding:8px 16px 36px;display:grid;grid-template-columns:1.05fr .95fr;gap:14px}
+@media(max-width:940px){main{grid-template-columns:1fr}}
+.card{background:rgba(21,27,35,.97);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 14px 32px rgba(0,0,0,.25)}
+.card h2{font-size:20px;margin:0 0 12px}
+.card h3{font-size:16px;margin:18px 0 10px;color:#dce5f0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:650px){.grid2,.grid3{grid-template-columns:1fr}}
+.row{margin-bottom:12px}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:5px}
+select,input[type=number],input[type=range]{width:100%}
+select,input[type=number]{background:#0e141c;color:var(--text);border:1px solid #3a4658;border-radius:11px;padding:11px;font-size:16px}
+input[type=number]{appearance:textfield}
+.rangehead{display:flex;justify-content:space-between;gap:10px;align-items:end}
+.tiny{font-size:12px;color:var(--muted)}
+.upgrade{display:flex;align-items:center;justify-content:space-between;background:var(--panel2);padding:10px 12px;border-radius:12px;margin:8px 0}
+.upgrade input{transform:scale(1.18)}
+.tag{display:inline-block;padding:3px 6px;border-radius:999px;background:#2a3548;color:#c9dbff;font-size:10px;margin-left:3px}
+button{border:0;border-radius:12px;padding:13px 14px;font-weight:800;font-size:15px;cursor:pointer}
+.primary{width:100%;background:linear-gradient(90deg,#34d399,#60a5fa,#c084fc);color:#061017;margin-top:8px}
+.racegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+@media(max-width:760px){.racegrid{grid-template-columns:1fr 1fr}}
+.racebtn{background:#242e3d;color:var(--text);border:1px solid #3b485c}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media(max-width:650px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:#0d131a;border:1px solid #2c3543;border-radius:13px;padding:10px;min-height:72px}
+.stat b{display:block;font-size:21px;margin-top:3px}
+.good{color:var(--good)}.blue{color:var(--blue)}.warn{color:var(--warn)}.bad{color:var(--bad)}.violet{color:var(--violet)}
+.result{margin-top:12px;background:#0c1118;border:1px solid #2c3543;border-radius:14px;padding:14px;min-height:118px}
+.score{font-size:34px;font-weight:900}
+.bars{display:grid;gap:8px;margin-top:12px}
+.barline{display:grid;grid-template-columns:120px 1fr 64px;align-items:center;gap:8px;font-size:12px}
+.barbg{height:9px;background:#090d13;border:1px solid #27303d;border-radius:999px;overflow:hidden}
+.barbg i{display:block;height:100%;background:linear-gradient(90deg,#60a5fa,#6ee7b7,#fbbf24)}
+.log{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;white-space:pre-wrap;color:#cbd5e1}
+.note{background:#111923;border:1px solid #334155;border-radius:12px;padding:10px;color:#cbd5e1;font-size:12px}
+footer{padding:0 16px 30px;color:var(--muted);font-size:12px}
+footer .credit{font-size:14px;color:#e2e8f0;margin-bottom:4px}
+</style>
+</head>
+<body>
+<header>
+<h1>CELL ENGINEER <span class="pro">PRO v1.1</span></h1>
+<div class="sub">Battery Racing Lab — 上級電池設計・EV競技シミュレーター</div>
+</header>
+
+<main>
+<section class="card">
+<h2>1. 化学系・基本構造</h2>
+<div class="grid2">
+<div class="row"><label>負極（燃料側）</label><select id="anode"></select></div>
+<div class="row"><label>正極</label><select id="cathode"></select></div>
+<div class="row"><label>電解液</label><select id="electrolyte"></select></div>
+<div class="row"><label>セル方式</label><select id="architecture"></select></div>
+</div>
+
+<h3>セル・パック設計</h3>
+<div class="grid3">
+<div class="row"><label>直列セル数</label><input id="series" type="number" min="1" max="2000" step="1" value="100"></div>
+<div class="row"><label>並列ストリング数</label><input id="parallel" type="number" min="1" max="200" step="1" value="8"></div>
+<div class="row"><label>インバータ級</label><select id="inverter">
+<option value="400">400 V級</option><option value="800" selected>800 V級</option><option value="1200">1200 V級</option></select></div>
+</div>
+
+<div class="row"><div class="rangehead"><label>電池ボックス容量</label><span id="volLabel" class="tiny"></span></div><input id="volume" type="range" min="20" max="300" value="100" step="10"></div>
+<div class="row"><div class="rangehead"><label>電極充填率</label><span id="fillLabel" class="tiny"></span></div><input id="fill" type="range" min="35" max="88" value="65" step="1"></div>
+<div class="row"><div class="rangehead"><label>電極間距離</label><span id="gapLabel" class="tiny"></span></div><input id="gap" type="range" min="1" max="12" value="5" step="1"></div>
+<div class="row"><div class="rangehead"><label>電極厚さ</label><span id="thickLabel" class="tiny"></span></div><input id="thickness" type="range" min="20" max="1200" value="220" step="20"></div>
+<div class="row"><div class="rangehead"><label>電極孔率</label><span id="porosityLabel" class="tiny"></span></div><input id="porosity" type="range" min="5" max="70" value="25" step="1"></div>
+<div class="row"><div class="rangehead"><label>セパレータ厚さ</label><span id="sepLabel" class="tiny"></span></div><input id="sepThickness" type="range" min="8" max="100" value="25" step="1"></div>
+<div class="row"><div class="rangehead"><label>電解液量</label><span id="elyteLabel" class="tiny"></span></div><input id="elyteRatio" type="range" min="30" max="150" value="80" step="5"></div>
+
+<div class="grid2">
+<div class="row"><label>集電体</label><select id="collector">
+<option value="Cu">銅 Cu</option><option value="Al" selected>アルミ Al</option><option value="Ni">ニッケル Ni</option><option value="SS">ステンレス</option><option value="C">カーボン複合</option></select></div>
+<div class="row"><label>冷却方式</label><select id="coolingMode">
+<option value="none">自然冷却</option><option value="air">強制空冷</option><option value="liquid" selected>液冷</option><option value="direct">冷媒直冷</option></select></div>
+</div>
+
+<h3>強化装備</h3>
+<div class="upgrade"><span>導電性カーボン添加 <span class="tag">抵抗↓</span><span class="tag">重量↑</span></span><input type="checkbox" id="carbon" checked></div>
+<div class="upgrade"><span>高性能セパレータ <span class="tag">安全性↑</span><span class="tag">抵抗↓</span></span><input type="checkbox" id="separator" checked></div>
+<div class="upgrade"><span>触媒強化 <span class="tag">空気極↑</span><span class="tag">価格↑</span></span><input type="checkbox" id="catalyst"></div>
+<div class="upgrade"><span>BMS高精度化 <span class="tag">寿命↑</span><span class="tag">価格↑</span></span><input type="checkbox" id="bms" checked></div>
+
+<button id="buildBtn" class="primary">PRO電池を組み立てる</button>
+</section>
+
+<section class="card">
+<h2>2. ベンチ試験</h2>
+<div class="stats">
+<div class="stat"><span class="tiny">セル電圧</span><b id="cellV" class="blue">--</b></div>
+<div class="stat"><span class="tiny">パック公称電圧</span><b id="packV" class="blue">--</b></div>
+<div class="stat"><span class="tiny">総エネルギー</span><b id="energy" class="good">--</b></div>
+<div class="stat"><span class="tiny">最大出力</span><b id="maxPower" class="warn">--</b></div>
+<div class="stat"><span class="tiny">10秒ピーク時電圧</span><b id="sagV" class="violet">--</b></div>
+<div class="stat"><span class="tiny">最大放電C-rate</span><b id="crate">--</b></div>
+<div class="stat"><span class="tiny">電池重量</span><b id="mass">--</b></div>
+<div class="stat"><span class="tiny">Wh/kg</span><b id="whkg">--</b></div>
+<div class="stat"><span class="tiny">Wh/L</span><b id="whl">--</b></div>
+<div class="stat"><span class="tiny">内部抵抗</span><b id="resistance">--</b></div>
+<div class="stat"><span class="tiny">推定コスト</span><b id="cost">--</b></div>
+<div class="stat"><span class="tiny">寿命</span><b id="life">--</b></div>
+</div>
+
+<div class="bars">
+<div class="barline"><span>出力余裕</span><div class="barbg"><i id="barPower"></i></div><b id="txtPower"></b></div>
+<div class="barline"><span>熱耐性</span><div class="barbg"><i id="barThermal"></i></div><b id="txtThermal"></b></div>
+<div class="barline"><span>安全性</span><div class="barbg"><i id="barSafety"></i></div><b id="txtSafety"></b></div>
+<div class="barline"><span>量産性</span><div class="barbg"><i id="barMfg"></i></div><b id="txtMfg"></b></div>
+</div>
+
+<h2 style="margin-top:18px">3. EV競技</h2>
+<div class="tiny">架空EV：車体900 kg / CdA 0.58 m² / 駆動効率90%。電池重量・電圧・熱・劣化を反映。</div>
+<div class="racegrid">
+<button class="racebtn" data-race="range">航続距離</button>
+<button class="racebtn" data-race="sprint">0–100 km/h</button>
+<button class="racebtn" data-race="hill">ヒルクライム</button>
+<button class="racebtn" data-race="endurance">耐久100 km</button>
+</div>
+<div id="result" class="result"><b>まだPRO電池がありません。</b><div class="tiny">左で設計し「PRO電池を組み立てる」を押してください。</div></div>
+
+<h3>レース中の見どころ</h3>
+<div class="note">高出力では <b>V = OCV − I×R</b> の電圧降下と <b>I²R</b> 発熱が効きます。厚い電極は容量に有利ですが高出力に不利、孔率を上げると反応面積は増えますが活物質密度が下がります。</div>
+</section>
+
+<section class="card" style="grid-column:1/-1">
+<h2>設計ログ</h2>
+<div id="log" class="log">—</div>
+</section>
+</main>
+
+<footer>
+<div class="credit">© 2026 kid5963 — CELL ENGINEER PRO</div>
+<div>Concept / game design: kid5963</div>
+<div style="margin-top:7px">教育・ゲーム用の近似モデルです。実際の電池設計、安全評価、材料選定には使用できません。数値は現実の傾向を参考にゲームバランス用に簡略化されています。</div>
+</footer>
+
+<script>
+"use strict";
+
+const anodes={
+"亜鉛 Zn":{pot:-.76,cap:.82,rho:7.14,power:.55,stable:.82,self:.12,cost:1.1,mfg:.92,t:["水系","アルカリ","酸性"]},
+"アルミ Al":{pot:-1.66,cap:2.98,rho:2.70,power:.70,stable:.55,self:.28,cost:.8,mfg:.95,t:["海水","水系","アルカリ"]},
+"マグネシウム Mg":{pot:-2.37,cap:2.20,rho:1.74,power:.88,stable:.42,self:.38,cost:1.8,mfg:.82,t:["海水","水系"]},
+"鉄 Fe":{pot:-.44,cap:.96,rho:7.87,power:.40,stable:.90,self:.08,cost:.35,mfg:1,t:["水系","アルカリ"]},
+"リチウム Li":{pot:-3.04,cap:3.86,rho:.53,power:.95,stable:.25,self:.45,cost:7.5,mfg:.58,t:["有機","固体"]},
+"ナトリウム Na":{pot:-2.71,cap:1.17,rho:.97,power:.88,stable:.30,self:.42,cost:1.5,mfg:.72,t:["有機","固体","溶融塩"]},
+"カリウム K":{pot:-2.93,cap:.69,rho:.86,power:.92,stable:.22,self:.50,cost:2.2,mfg:.55,t:["有機","固体"]},
+"カルシウム Ca":{pot:-2.87,cap:1.34,rho:1.55,power:.72,stable:.36,self:.32,cost:1.6,mfg:.65,t:["有機","固体","溶融塩"]},
+"チタン Ti":{pot:-1.63,cap:.67,rho:4.51,power:.46,stable:.95,self:.03,cost:5.5,mfg:.75,t:["水系","有機","固体"]},
+"クロム Cr":{pot:-.74,cap:1.04,rho:7.19,power:.50,stable:.88,self:.05,cost:2.7,mfg:.78,t:["水系","酸性"]},
+"マンガン Mn":{pot:-1.18,cap:.98,rho:7.21,power:.58,stable:.64,self:.16,cost:1.0,mfg:.88,t:["水系","アルカリ"]},
+"スズ Sn":{pot:-.14,cap:.45,rho:7.31,power:.42,stable:.92,self:.04,cost:4.3,mfg:.83,t:["水系","有機"]},
+"鉛 Pb":{pot:-.13,cap:.26,rho:11.34,power:.62,stable:.92,self:.05,cost:.75,mfg:.96,t:["酸性"]},
+"ニッケル Ni":{pot:-.25,cap:.91,rho:8.90,power:.60,stable:.95,self:.03,cost:6.5,mfg:.84,t:["アルカリ","水系"]},
+"カドミウム Cd":{pot:-.40,cap:.48,rho:8.65,power:.72,stable:.90,self:.06,cost:3.8,mfg:.60,t:["アルカリ"]},
+"銅 Cu":{pot:.34,cap:.84,rho:8.96,power:.34,stable:.98,self:.01,cost:6.0,mfg:.98,t:["水系","酸性"]},
+"銀 Ag":{pot:.80,cap:.25,rho:10.49,power:.55,stable:.99,self:.01,cost:90,mfg:.72,t:["水系","アルカリ"]},
+"シリコン Si":{pot:-.40,cap:3.58,rho:2.33,power:.55,stable:.45,self:.10,cost:2.8,mfg:.52,t:["有機","固体"]},
+"黒鉛 Graphite":{pot:-.10,cap:.37,rho:2.26,power:.78,stable:.93,self:.04,cost:1.8,mfg:.95,t:["有機","固体"]},
+"LTO":{pot:1.55,cap:.18,rho:3.50,power:1.00,stable:.99,self:.02,cost:7.0,mfg:.74,t:["有機","固体"]},
+"Al-Zn-In 海水用合金":{pot:-1.05,cap:2.40,rho:2.75,power:.82,stable:.78,self:.18,cost:2.1,mfg:.82,t:["海水"]},
+"Mg-Al-Zn 合金":{pot:-1.55,cap:1.75,rho:1.82,power:.92,stable:.62,self:.24,cost:2.5,mfg:.78,t:["海水","水系"]},
+"Zn-Al 合金":{pot:-.92,cap:1.05,rho:6.20,power:.66,stable:.84,self:.11,cost:1.5,mfg:.88,t:["水系","アルカリ"]},
+"Fe-Si 合金":{pot:-.52,cap:.72,rho:6.90,power:.48,stable:.94,self:.04,cost:.7,mfg:.95,t:["水系","アルカリ"]}
+};
+
+const cathodes={
+"MnO₂":{pot:.74,m:1.0,p:.55,cost:1.0,mfg:.95,c:["水系","アルカリ","酸性"]},
+"NiOOH":{pot:.49,m:1.15,p:.72,cost:4.5,mfg:.80,c:["アルカリ"]},
+"空気極 O₂":{pot:.40,m:.20,p:.42,cost:1.2,mfg:.68,c:["海水","水系","アルカリ"],air:1},
+"LFP系":{pot:.60,m:.75,p:.80,cost:2.4,mfg:.92,c:["有機","固体"]},
+"NMC系":{pot:.85,m:.65,p:.92,cost:5.5,mfg:.82,c:["有機","固体"]},
+"LCO系":{pot:.95,m:.68,p:.84,cost:6.4,mfg:.78,c:["有機","固体"]},
+"LMO系":{pot:.82,m:.72,p:.88,cost:3.0,mfg:.88,c:["有機","固体"]},
+"硫黄 S":{pot:.55,m:.35,p:.48,cost:.55,mfg:.62,c:["有機","固体"]},
+"FePO₄系":{pot:.52,m:.82,p:.74,cost:1.7,mfg:.92,c:["有機","固体"]},
+"Ag₂O":{pot:.34,m:1.30,p:.76,cost:60,mfg:.70,c:["アルカリ"]},
+"HgO":{pot:.10,m:1.45,p:.66,cost:8,mfg:.30,c:["アルカリ"]},
+"PbO₂":{pot:1.46,m:1.28,p:.78,cost:1.3,mfg:.94,c:["酸性"]},
+"CuO":{pot:.22,m:1.10,p:.52,cost:2.3,mfg:.88,c:["水系","アルカリ"]},
+"FeS₂":{pot:.48,m:.92,p:.70,cost:1.0,mfg:.88,c:["有機"]},
+"Prussian Blue":{pot:.65,m:.78,p:.70,cost:1.5,mfg:.78,c:["水系","有機"]},
+"V₂O₅":{pot:.88,m:.86,p:.68,cost:6.0,mfg:.65,c:["水系","有機"]},
+"活性炭キャパシタ極":{pot:.30,m:.22,p:1.20,cost:1.2,mfg:.95,c:["水系","有機","イオン液体"]},
+"グラファイト正極":{pot:.45,m:.50,p:.76,cost:1.8,mfg:.90,c:["有機","固体"]},
+"Br₂/Br⁻":{pot:1.07,m:.55,p:.88,cost:2.4,mfg:.55,c:["水系","酸性"]},
+"I₂/I⁻":{pot:.54,m:.62,p:.64,cost:4.0,mfg:.70,c:["水系","有機"]}
+};
+
+const electrolytes={
+"天然海水":{type:"海水",cond:.58,safe:.92,m:1.03,v:1.7,temp:.72,cost:.02,mfg:1},
+"人工海水":{type:"海水",cond:.62,safe:.92,m:1.03,v:1.7,temp:.73,cost:.12,mfg:.98},
+"中性NaCl水溶液":{type:"水系",cond:.70,safe:.88,m:1.00,v:1.7,temp:.74,cost:.08,mfg:1},
+"Na₂SO₄水溶液":{type:"水系",cond:.64,safe:.92,m:1.05,v:1.8,temp:.78,cost:.15,mfg:.98},
+"ZnSO₄水溶液":{type:"水系",cond:.60,safe:.84,m:1.10,v:1.8,temp:.76,cost:.35,mfg:.96},
+"KOH水溶液":{type:"アルカリ",cond:.96,safe:.62,m:1.00,v:1.6,temp:.78,cost:.35,mfg:.95},
+"NaOH水溶液":{type:"アルカリ",cond:.91,safe:.58,m:1.03,v:1.6,temp:.77,cost:.25,mfg:.96},
+"LiOH水溶液":{type:"アルカリ",cond:.78,safe:.60,m:1.02,v:1.6,temp:.78,cost:1.2,mfg:.85},
+"希硫酸 H₂SO₄":{type:"酸性",cond:1.00,safe:.38,m:1.15,v:2.1,temp:.80,cost:.18,mfg:.98},
+"硫酸亜鉛系酸性液":{type:"酸性",cond:.82,safe:.52,m:1.12,v:2.0,temp:.78,cost:.45,mfg:.95},
+"有機EC/DMC + LiPF₆":{type:"有機",cond:.66,safe:.40,m:1.20,v:4.3,temp:.62,cost:2.0,mfg:.82},
+"有機PC + LiPF₆":{type:"有機",cond:.58,safe:.38,m:1.18,v:4.2,temp:.66,cost:2.2,mfg:.80},
+"NaPF₆ カーボネート系":{type:"有機",cond:.52,safe:.42,m:1.17,v:4.0,temp:.64,cost:2.1,mfg:.74},
+"KPF₆ カーボネート系":{type:"有機",cond:.46,safe:.40,m:1.16,v:4.0,temp:.62,cost:2.4,mfg:.68},
+"LiTFSI エーテル系":{type:"有機",cond:.62,safe:.46,m:1.13,v:4.1,temp:.68,cost:4.0,mfg:.62},
+"イオン液体 EMIM-TFSI":{type:"イオン液体",cond:.36,safe:.82,m:1.45,v:4.5,temp:.86,cost:8.0,mfg:.50},
+"深共晶溶媒 DES":{type:"イオン液体",cond:.28,safe:.86,m:1.20,v:3.2,temp:.80,cost:1.8,mfg:.65},
+"PEO系固体電解質":{type:"固体",cond:.18,safe:.95,m:1.10,v:4.3,temp:.58,cost:5.0,mfg:.45},
+"硫化物系固体電解質":{type:"固体",cond:.72,safe:.72,m:1.85,v:5.0,temp:.72,cost:8.5,mfg:.32},
+"酸化物系固体電解質":{type:"固体",cond:.38,safe:.98,m:2.20,v:5.5,temp:.82,cost:10,mfg:.28},
+"溶融塩 NaCl-KCl":{type:"溶融塩",cond:.90,safe:.30,m:1.55,v:3.5,temp:.98,cost:.5,mfg:.35},
+"ZnBr₂水溶液":{type:"水系",cond:.76,safe:.52,m:1.32,v:2.2,temp:.74,cost:.9,mfg:.78},
+"KI/I₂水溶液":{type:"水系",cond:.68,safe:.66,m:1.16,v:1.9,temp:.76,cost:1.5,mfg:.75}
+};
+
+const architectures={
+"湿式プレート":{e:.78,p:.72,m:1.00,t:.84,s:.85,mfg:.96,cost:1.0},
+"巻回セル":{e:1.08,p:.90,m:.92,t:.72,s:.72,mfg:.90,cost:1.15},
+"積層パウチ":{e:1.15,p:.96,m:.86,t:.68,s:.66,mfg:.82,cost:1.20},
+"フローセル":{e:.66,p:.82,m:1.18,t:.95,s:.88,mfg:.58,cost:1.35},
+"金属空気セル":{e:1.35,p:.62,m:.76,t:.80,s:.75,mfg:.52,cost:1.25,air:1}
+};
+
+const collectors={
+Cu:{rho:8.96,res:.95,cost:1.6,safe:.95,mfg:.98},
+Al:{rho:2.70,res:1.35,cost:.6,safe:.92,mfg:.98},
+Ni:{rho:8.90,res:1.25,cost:2.2,safe:.96,mfg:.88},
+SS:{rho:7.9,res:4.5,cost:.7,safe:.98,mfg:.98},
+C:{rho:1.8,res:2.4,cost:1.9,safe:.99,mfg:.62}
+};
+const coolingModes={
+none:{mass:0,power:0,thermal:.52,cost:0},
+air:{mass:.018,power:.008,thermal:.68,cost:.08},
+liquid:{mass:.045,power:.012,thermal:.86,cost:.20},
+direct:{mass:.065,power:.020,thermal:.98,cost:.45}
+};
+
+function fillSelect(id,obj,def){
+ const s=document.getElementById(id);
+ Object.keys(obj).forEach(k=>{const o=document.createElement("option");o.value=k;o.textContent=k;s.appendChild(o)});
+ s.value=def;
+}
+fillSelect("anode",anodes,"アルミ Al");
+fillSelect("cathode",cathodes,"空気極 O₂");
+fillSelect("electrolyte",electrolytes,"天然海水");
+fillSelect("architecture",architectures,"金属空気セル");
+
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function el(id){return document.getElementById(id)}
+function pct(x){return Math.round(clamp(x,0,1)*100)}
+function moneyJPY(x){if(x>=1e8)return (x/1e8).toFixed(2)+" 億円";if(x>=1e4)return (x/1e4).toFixed(0)+" 万円";return Math.round(x)+" 円"}
+
+function labels(){
+ el("volLabel").textContent=el("volume").value+" L";
+ el("fillLabel").textContent=el("fill").value+" %";
+ el("gapLabel").textContent=el("gap").value+" mm";
+ el("thickLabel").textContent=el("thickness").value+" μm";
+ el("porosityLabel").textContent=el("porosity").value+" %";
+ el("sepLabel").textContent=el("sepThickness").value+" μm";
+ el("elyteLabel").textContent=el("elyteRatio").value+" %";
+}
+["volume","fill","gap","thickness","porosity","sepThickness","elyteRatio"].forEach(id=>el(id).addEventListener("input",labels));
+labels();
+
+let battery=null;
+
+function buildBattery(){
+ const A=anodes[el("anode").value], C=cathodes[el("cathode").value], E=electrolytes[el("electrolyte").value], X=architectures[el("architecture").value];
+ const K=collectors[el("collector").value], Cool=coolingModes[el("coolingMode").value];
+ const series=clamp(+el("series").value||1,1,2000), parallel=clamp(+el("parallel").value||1,1,200);
+ const Vbox=+el("volume").value, fill=+el("fill").value/100, gap=+el("gap").value;
+ const thick=+el("thickness").value, porosity=+el("porosity").value/100, sepT=+el("sepThickness").value, eratio=+el("elyteRatio").value/100;
+ const carbon=el("carbon").checked, separator=el("separator").checked, catalyst=el("catalyst").checked, bms=el("bms").checked;
+ const inv=+el("inverter").value;
+
+ let compat=C.c.includes(E.type)?1:.55;
+ if(A.t&&!A.t.includes(E.type))compat*=.78;
+ if(C.air&&el("architecture").value!=="金属空気セル")compat*=.82;
+ if(X.air&&!C.air)compat*=.72;
+ if(el("anode").value==="リチウム Li"&&!["有機","固体"].includes(E.type))compat*=.22;
+ if(el("anode").value==="ナトリウム Na"&&!["有機","固体","溶融塩"].includes(E.type))compat*=.24;
+ if(el("anode").value==="カリウム K"&&!["有機","固体"].includes(E.type))compat*=.20;
+
+ let cellV=(C.pot-A.pot)*.82;
+ cellV=Math.max(.12,Math.min(cellV,E.v*.92));
+ let packV=cellV*series;
+
+ const invMin={400:220,800:450,1200:700}[inv], invMax={400:520,800:950,1200:1450}[inv];
+ let inverterFactor=(packV<invMin)?clamp(packV/invMin,.25,1):(packV>invMax?clamp(invMax/packV,.4,1):1);
+
+ let activeFraction=fill*(1-porosity*.55);
+ let activeVol=Vbox*activeFraction*.43;
+ let anodeMass=activeVol*A.rho;
+ let cathodeMass=anodeMass*C.m*.58;
+ let electrolyteMass=Vbox*(1-fill)*E.m*.70*eratio;
+ let structuralMass=Vbox*.10*X.m;
+ let collectorMass=Vbox*.0035*K.rho*(1+series/500);
+ let sepMass=Vbox*.006*(sepT/25);
+ let coolMass=Vbox*Cool.mass;
+ let addMass=(carbon?Vbox*.012:0)+(separator?Vbox*.004:0)+(bms?Vbox*.008:0);
+ let mass=anodeMass+cathodeMass+electrolyteMass+structuralMass+collectorMass+sepMass+coolMass+addMass;
+
+ let thicknessUtil=clamp(1.12-(thick-200)/1900,.55,1.12);
+ let porosityUtil=clamp(.88+porosity*.55,.88,1.20);
+ let electrolyteUtil=clamp(.70+eratio*.35,.78,1.16);
+ let utilization=(.45+.30*A.stable)*thicknessUtil*porosityUtil*electrolyteUtil*compat;
+ if(E.type==="海水"&&el("anode").value==="アルミ Al")utilization*=.82;
+ utilization=clamp(utilization,.08,.93);
+
+ // Total electrochemical charge comes from the total active mass of the whole pack.
+ // Splitting that mass into more series cells raises voltage but lowers pack Ah proportionally,
+ // so total energy must not increase merely because series count is increased.
+ let totalAhEquivalent=anodeMass*A.cap*1000*utilization;
+ let packAh=totalAhEquivalent/series;
+ let energyKWh=packAh*cellV*series*.60*X.e/1000;
+ if(C.air)energyKWh*=1.18;
+
+ // Resistance and C-rate
+ let ionic=(gap/5)*(sepT/25)/(Math.max(E.cond,.08));
+ let thickPenalty=clamp(thick/220,.55,4.5);
+ let poreGain=clamp(1.2-porosity*.65,.65,1.15);
+ let baseR=.035*ionic*thickPenalty*poreGain/(X.p*A.power*C.p*Math.max(compat,.20));
+ if(carbon)baseR*=.74;
+ if(separator)baseR*=.86;
+ if(catalyst&&C.air)baseR*=.72;
+ baseR*=K.res;
+ let packR=baseR*series/(parallel*parallel)*(.90+100/Vbox*.15);
+ packR=Math.max(.001,packR);
+
+ let cRate=clamp((2.8*A.power*C.p*X.p*E.cond/(thickPenalty*poreGain))*(carbon?1.18:1)*(catalyst&&C.air?1.25:1),.15,12);
+ let maxCurrent=Math.max(5,packAh*cRate);
+ let ohmicPower=packV*packV/(4*packR)/1000;
+ let cPower=packV*maxCurrent/1000;
+
+ let thermalBase=.42+.24*X.t+.16*E.temp+.34*Cool.thermal-(fill-.6)*.30-(thick/1200)*.08;
+ let thermal=clamp(thermalBase,.15,1);
+ let maxPower=Math.min(ohmicPower,cPower)*(.58+.42*thermal)*inverterFactor;
+
+ let peakI=Math.min(maxCurrent, maxPower*1000/Math.max(packV,.1));
+ let sag=peakI*packR;
+ let peakV=Math.max(packV-sag,0);
+
+ let safety=.26+.23*E.safe+.18*X.s+.14*A.stable+.10*K.safe+(separator?.10:0)+(bms?.08:0)-(porosity>.55?.05:0);
+ if(el("anode").value==="リチウム Li")safety-=.10;
+ safety=clamp(safety,.05,1);
+
+ let self=A.self*(1+porosity*.55)*(E.type==="海水"?1.18:1);
+ let cycleLife=(120+950*A.stable*E.safe*X.s)*(1-self*.55)*(bms?1.18:1)*(Cool.thermal>.8?1.12:1)*(thick<500?1.08:.92);
+ if(C.air)cycleLife*=.36;
+ cycleLife=Math.max(25,Math.round(cycleLife));
+
+ let whkg=energyKWh*1000/mass, whl=energyKWh*1000/Vbox;
+
+ let mfg=clamp((A.mfg+C.mfg+E.mfg+X.mfg+K.mfg)/5 -(porosity>.55?.08:0)-(sepT<15?.08:0)+(bms?.02:0),.05,1);
+
+ // Rough game price
+ let materialIndex=anodeMass*A.cost+cathodeMass*C.cost+electrolyteMass*E.cost+collectorMass*K.cost;
+ let complexity=(1.3-X.mfg)*180000+(1.2-mfg)*120000;
+ let costJPY=(materialIndex*850 + Vbox*650 + series*parallel*40 + complexity + (catalyst?Vbox*1800:0)+(bms?90000:0)+Vbox*Cool.cost*1200)*X.cost;
+ costJPY=Math.max(30000,costJPY);
+
+ // Degradation per 100 km-equivalent hard use
+ let degradation=clamp(.00035+(1-A.stable)*.0015+(1-E.safe)*.0007+(1-thermal)*.0012+self*.0006-(bms?.00025:0),.0001,.008);
+
+ battery={A,C,E,X,K,Cool,series,parallel,cellV,packV,packAh,energyKWh,maxPower,maxCurrent,cRate,mass,packR,peakV,thermal,safety,cycleLife,whkg,whl,costJPY,mfg,compat,self,degradation,inverterFactor,inv,thick,porosity,sepT,eratio,
+ desc:[el("anode").value,el("electrolyte").value,el("cathode").value,el("architecture").value,el("collector").value,el("coolingMode").value]};
+
+ render();
+}
+
+function render(){
+ const b=battery;
+ el("cellV").textContent=b.cellV.toFixed(2)+" V";
+ el("packV").textContent=b.packV.toFixed(0)+" V";
+ el("energy").textContent=b.energyKWh.toFixed(1)+" kWh";
+ el("maxPower").textContent=b.maxPower.toFixed(0)+" kW";
+ el("sagV").textContent=b.peakV.toFixed(0)+" V";
+ el("crate").textContent=b.cRate.toFixed(1)+" C";
+ el("mass").textContent=b.mass.toFixed(0)+" kg";
+ el("whkg").textContent=b.whkg.toFixed(0);
+ el("whl").textContent=b.whl.toFixed(0);
+ el("resistance").textContent=(b.packR*1000).toFixed(1)+" mΩ";
+ el("cost").textContent=moneyJPY(b.costJPY);
+ el("life").textContent=b.cycleLife+" cyc";
+
+ let pScore=clamp(b.maxPower/500,0,1);
+ el("barPower").style.width=(pScore*100)+"%"; el("txtPower").textContent=pct(pScore)+"%";
+ el("barThermal").style.width=(b.thermal*100)+"%"; el("txtThermal").textContent=pct(b.thermal)+"%";
+ el("barSafety").style.width=(b.safety*100)+"%"; el("txtSafety").textContent=pct(b.safety)+"%";
+ el("barMfg").style.width=(b.mfg*100)+"%"; el("txtMfg").textContent=pct(b.mfg)+"%";
+
+ let notes=[];
+ if(b.compat<.45)notes.push("⛔ 材料・電解液の組合せが非常に悪い。");
+ else if(b.compat<.75)notes.push("⚠ 材料・電解液の相性が悪い。");
+ if(b.inverterFactor<.8)notes.push("⚠ パック電圧とインバータ級の相性が悪く出力制限。");
+ if(b.peakV<b.packV*.72)notes.push("⚠ 高負荷時の電圧降下が大きい。");
+ if(b.thermal<.55)notes.push("⚠ 熱余裕が小さく連続出力に弱い。");
+ if(b.self>.30)notes.push("⚠ 自己放電・自己腐食が大きい。");
+ if(b.safety<.55)notes.push("⚠ 安全マージンが小さい。");
+ if(b.thick>700)notes.push("⚠ 厚電極：容量には有利だがイオン輸送が遅い。");
+ if(b.porosity>.55)notes.push("⚠ 高孔率：出力に有利だが活物質密度が低下。");
+ if(!notes.length)notes.push("✓ 大きな弱点のない設計。");
+
+ el("log").textContent=
+`化学系: ${b.desc[0]} ｜ ${b.desc[1]} ｜ ${b.desc[2]}
+方式: ${b.desc[3]}
+集電体: ${b.desc[4]} / 冷却: ${b.desc[5]}
+
+セル電圧: ${b.cellV.toFixed(3)} V
+直列 × 並列: ${b.series}S × ${b.parallel}P\n（直列数を増やしても総エネルギー自体は増えません）
+パック公称電圧: ${b.packV.toFixed(1)} V
+容量: ${b.packAh.toFixed(0)} Ah
+エネルギー: ${b.energyKWh.toFixed(2)} kWh
+最大出力: ${b.maxPower.toFixed(1)} kW
+10秒ピーク電圧: ${b.peakV.toFixed(1)} V
+内部抵抗: ${(b.packR*1000).toFixed(2)} mΩ
+最大放電: ${b.cRate.toFixed(2)} C
+重量: ${b.mass.toFixed(1)} kg
+エネルギー密度: ${b.whkg.toFixed(0)} Wh/kg / ${b.whl.toFixed(0)} Wh/L
+推定コスト: ${moneyJPY(b.costJPY)}
+推定寿命: ${b.cycleLife} cycles
+100 km高負荷走行あたり劣化: ${(b.degradation*100).toFixed(3)} %
+
+${notes.join("\n")}
+
+※教育ゲーム用近似モデル。実機設計値ではありません。`;
+
+ el("result").innerHTML="<b>PRO電池完成。</b><div class='tiny'>4種類の競技で性能を確認してください。</div>";
+}
+
+function race(type){
+ if(!battery)return;
+ const b=battery, car=900+b.mass;
+ if(type==="range"){
+   let aux=1.5; // kW
+   let cons=112*(1+.00043*(car-900))*(1+.03*(1-b.thermal));
+   let eff=.92-clamp(b.packR*.75,0,.13);
+   let usable=b.energyKWh*clamp(.94-b.self*.10,.72,.94);
+   let km=usable*1000*eff/(cons+aux/80*1000);
+   el("result").innerHTML=`<b>航続距離チャレンジ</b><div class="score">${km.toFixed(0)} km</div><div class="tiny">車両総重量 ${car.toFixed(0)} kg / 実効消費 ${(cons).toFixed(0)} Wh/km / usable ${usable.toFixed(1)} kWh</div>`;
+ }
+ if(type==="sprint"){
+   let p=Math.min(b.maxPower,650)*.90;
+   let specific=p*1000/car;
+   let sec=clamp(11.0-.0205*specific,2.1,16);
+   sec*=1+(1-b.thermal)*.10+(1-b.inverterFactor)*.18;
+   let sagPct=(b.packV-b.peakV)/Math.max(b.packV,1);
+   sec*=1+sagPct*.22;
+   el("result").innerHTML=`<b>0–100 km/h</b><div class="score">${sec.toFixed(2)} s</div><div class="tiny">利用出力 ${p.toFixed(0)} kW / ピーク電圧 ${b.peakV.toFixed(0)} V / 総重量 ${car.toFixed(0)} kg</div>`;
+ }
+ if(type==="hill"){
+   let pCont=b.maxPower*(.30+.50*b.thermal)*1000;
+   let v=5,g=9.81;
+   for(let i=0;i<240;i++){
+     let force=car*g*.08+.012*car*g+.5*1.2*.58*v*v;
+     let vv=pCont/Math.max(force,1);
+     v=.72*v+.28*clamp(vv,3,43);
+   }
+   let time=5000/v;
+   let heat=(Math.min(b.maxCurrent,pCont/Math.max(b.packV,1))**2)*b.packR*time/3600000;
+   let penalty=1+Math.max(0,heat-2)*(.02+(1-b.thermal)*.04);
+   time*=penalty;
+   let min=Math.floor(time/60),sec=Math.round(time%60);
+   el("result").innerHTML=`<b>5 km・平均8% ヒルクライム</b><div class="score">${min}:${String(sec).padStart(2,"0")}</div><div class="tiny">連続出力 ${(pCont/1000).toFixed(0)} kW / 発熱損失 ${heat.toFixed(1)} kWh相当 / 総重量 ${car.toFixed(0)} kg</div>`;
+ }
+ if(type==="endurance"){
+   let baseCons=150*(1+.00042*(car-900));
+   let avgPower=55; // kW
+   let current=avgPower*1000/Math.max(b.packV,1);
+   let heatKW=current*current*b.packR/1000;
+   let tempPenalty=clamp((heatKW/18)*(1-b.thermal),0,.30);
+   let degradation=b.degradation*(1+tempPenalty*4)*(1+Math.max(0,b.cRate-3)*.04);
+   let usable=b.energyKWh*(1-degradation);
+   let energyNeed=baseCons*100/1000;
+   let finish=usable>=energyNeed;
+   let time=finish? (100/(105*(1-tempPenalty)))*60 : (usable/energyNeed)*57;
+   el("result").innerHTML=`<b>100 km耐久</b><div class="score">${finish?"完走":"電欠"} / ${time.toFixed(1)} min</div><div class="tiny">走行後SOH低下 ${(degradation*100).toFixed(3)}% / 熱損失 ${heatKW.toFixed(1)} kW / 必要 ${energyNeed.toFixed(1)} kWh</div>`;
+ }
+}
+
+el("buildBtn").addEventListener("click",buildBattery);
+document.querySelectorAll("[data-race]").forEach(btn=>btn.addEventListener("click",()=>race(btn.dataset.race)));
+buildBattery();
+</script>
+</body>
+</html>
